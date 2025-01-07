@@ -1,10 +1,16 @@
-const { Destinatario } = require('../models');
+const { destinatario } = require('../models');
 
 // crear destinatario
 exports.create = async (req, res) => {
     try {
-        const destinatario = await Destinatario.create(req.body);
-        res.status(201).send(destinatario);
+        // Verificar si el destinatario ya existe
+        const existingDestinatario = await destinatario.findOne({ where: { correo: req.body.correo } });
+        if (existingDestinatario) {
+            return res.status(400).send({ message: 'El destinatario ya existe' });
+        }
+
+        const Destinatario = await destinatario.create(req.body);
+        res.status(201).send(Destinatario);
     } catch (error) {
         console.log(error);
         res.status(400).send(error);
@@ -14,8 +20,8 @@ exports.create = async (req, res) => {
 // listar destinatarios
 exports.findAll = async (req, res) => {
     try {
-        const destinatarios = await Destinatario.findAll();
-        res.status(200).send(destinatarios);
+        const Destinatarios = await destinatario.findAll();
+        res.status(200).send(Destinatarios);
     } catch (error) {
         res.status(500).send(error);
     }
@@ -24,11 +30,24 @@ exports.findAll = async (req, res) => {
 // obtener destinatario por ID
 exports.findOne = async (req, res) => {
     try {
-        const destinatario = await Destinatario.findByPk(req.params.id);
-        if (!destinatario) {
-            return res.status(404).send();
+        const Destinatario = await destinatario.findByPk(req.params.id);
+        if (!Destinatario) {
+            return res.status(404).send({ message: 'Destinatario no encontrado' });
         }
-        res.status(200).send(destinatario);
+        res.status(200).send(Destinatario);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+};
+
+//obtener destinatario por uuid
+exports.findOneUUID = async (req, res) => {
+    try {
+        const Destinatario = await destinatario.findOne({ where: { external_id: req.params.uuid } });
+        if (!Destinatario) {
+            return res.status(404).send({ message: 'Destinatario no encontrado' });
+        }
+        res.status(200).send(Destinatario);
     } catch (error) {
         res.status(500).send(error);
     }
@@ -37,12 +56,26 @@ exports.findOne = async (req, res) => {
 // actualizar a destinatario por ID
 exports.update = async (req, res) => {
     try {
-        const destinatario = await Destinatario.findByPk(req.params.id);
-        if (!destinatario) {
+        const Destinatario = await destinatario.findByPk(req.params.id);
+        if (!Destinatario) {
             return res.status(404).send();
         }
-        await destinatario.update(req.body);
-        res.status(200).send(destinatario);
+        await Destinatario.update(req.body);
+        res.status(200).send(Destinatario);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+};
+
+//actualizar a destinatario por uuid
+exports.updateUUID = async (req, res) => {
+    try {
+        const Destinatario = await destinatario.findOne({ where: { external_id: req.params.uuid } });
+        if (!Destinatario) {
+            return res.status(404).send();
+        }
+        await Destinatario.update(req.body);
+        res.status(200).send(Destinatario);
     } catch (error) {
         res.status(400).send(error);
     }
@@ -51,12 +84,26 @@ exports.update = async (req, res) => {
 // borrar a destinatario por ID
 exports.delete = async (req, res) => {
     try {
-        const destinatario = await Destinatario.findByPk(req.params.id);
-        if (!destinatario) {
+        const Destinatario = await destinatario.findByPk(req.params.id);
+        if (!Destinatario) {
             return res.status(404).send();
         }
-        await destinatario.destroy();
-        res.status(200).send(destinatario);
+        await Destinatario.destroy();
+        res.status(200).send(Destinatario);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+};
+
+// borrar a destinatario por uuid
+exports.deleteUUID = async (req, res) => {
+    try {
+        const Destinatario = await destinatario.findOne({ where: { external_id: req.params.uuid } });
+        if (!Destinatario) {
+            return res.status(404).send();
+        }
+        await Destinatario.destroy();
+        res.status(200).send(Destinatario);
     } catch (error) {
         res.status(500).send(error);
     }
