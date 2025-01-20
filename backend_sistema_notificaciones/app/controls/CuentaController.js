@@ -26,7 +26,7 @@ class CuentaController {
             if (login === null) {
                 res.status(400);
                 res.json({
-                    msg: "CUENTA NO ENCONTRADA",
+                    msg: "USUARIO NO ENCONTRADO",
                     code: 400
                 });
             } else {
@@ -44,7 +44,7 @@ class CuentaController {
                         require('dotenv').config();
                         const llave = process.env.KEY_SQ;
                         const token = jwt.sign(tokenData, llave, {
-                            expiresIn: '12h'
+                            expiresIn: '1h'
                         });
 
                         res.json({
@@ -65,12 +65,12 @@ class CuentaController {
                     }
                 } else if (login.estado == false) {
                     res.json({
-                        msg: "CUENTA NO SE ENCUENTRA ACTIVA",
+                        msg: "USUARIO NO SE ENCUENTRA ACTIVO",
                         code: 201
                     });
                 } else {
                     res.json({
-                        msg: "NO EXISTE ESA CUENTA",
+                        msg: "NO EXISTE ESE USUARIO",
                         code: 201
                     });
                 }

@@ -66,7 +66,7 @@ router.post('/cuenta/sesion', [
 
 /*PERSONA CONTROLLER*/
 router.post('/persona/registrar', usuarioController.guardar);
-router.post('/persona/modificar', usuarioController.modificar);
+router.post('/persona/modificar/:external', usuarioController.modificar);
 router.get('/persona/obtener/:external', usuarioController.obtener);
 
 /*GRUPO CONTROLLER*/
