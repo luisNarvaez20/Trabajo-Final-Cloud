@@ -9,6 +9,8 @@ const UsuarioController = require('../app/controls/UsuarioController');
 var usuarioController = new UsuarioController();
 const CuentaController = require('../app/controls/CuentaController');
 var cuentaController = new CuentaController();
+const GrupoController = require('../app/controls/GrupoController');
+var grupoController = new GrupoController();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -66,5 +68,9 @@ router.post('/cuenta/sesion', [
 router.post('/persona/registrar', usuarioController.guardar);
 router.post('/persona/modificar', usuarioController.modificar);
 router.get('/persona/obtener/:external', usuarioController.obtener);
+
+/*GRUPO CONTROLLER*/
+router.post('/grupo/guardar', grupoController.guardar);
+router.get('/grupo/listar/:external', grupoController.listar);
 
 module.exports = router;

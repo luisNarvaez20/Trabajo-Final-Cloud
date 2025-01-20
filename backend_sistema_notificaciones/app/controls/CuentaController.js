@@ -10,6 +10,7 @@ let jwt = require('jsonwebtoken');
 class CuentaController {
 
     async sesion(req, res) {
+        console.log("entro")
         let errors = validationResult(req);
         if (errors.isEmpty()) {
             var login = await cuenta.findOne({
@@ -18,7 +19,7 @@ class CuentaController {
                     {
                         model: usuario,
                         as: 'usuario',
-                        attributes: ['apellidos', 'nombres', 'external_id'],
+                        attributes: ['apellidos', 'nombres','correo', 'external_id'],
                     }
                 ]
             });            
@@ -51,9 +52,11 @@ class CuentaController {
                             user: login.usuario.nombres + ' ' + login.usuario.apellidos,
                             msg: "Bienvenid@ " + login.usuario.nombres + ' ' + login.usuario.apellidos,
                             usuario: login.user,
+                            correo: login.usuario.correo,
                             external_id: login.usuario.external_id,
                             code: 200
                         });
+
                     } else {
                         res.json({
                             msg: "CLAVE INCORRECTA",
