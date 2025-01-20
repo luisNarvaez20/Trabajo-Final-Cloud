@@ -26,13 +26,13 @@ export default function Page({ }) {
     const validationShema = Yup.object().shape({
         nombres: Yup.string().required('Ingrese los nombres'),
         apellidos: Yup.string().required('ingrese los apellidos'),
-        cedula: Yup.string().required('Ingrese un nro cedula'),
+        direccion: Yup.string().required('Ingrese una direccion'),
         telefono: Yup.string().required('ingrese un telefono'),
-        rol: Yup.string().required('Seleccione un rol'),
-        correo: Yup.string().required('Ingrese un correo electronico').email('Se requiere correo valido').test("error", 'Debe ingresar un correo institucional de la UNL   (unl.edu.ec)', (value) => {
+        usuario: Yup.string().required('ingrese un usuario'),
+        correo: Yup.string().required('Ingrese un correo electronico').email('Se requiere correo valido').test("error", 'Debe ingresar un correo valido', (value) => {
             if (value) {
                 const dominio = value.split('@')[1];
-                return dominio === 'unl.edu.ec';
+                return dominio === 'unl.edu.ec' || dominio === 'gmail.com';
             }
             return false;
         }),
@@ -44,7 +44,7 @@ export default function Page({ }) {
     const { errors } = formState;
 
     //obtener los datos de las personas por el external
-    if (!obt) {
+    useEffect(() => {
         peticionGet("persona/obtener/" + external, key).then((info) => {
             if (info.code === 200) {
                 setPersona(info.info);
@@ -61,7 +61,7 @@ export default function Page({ }) {
                 mensajes("No se pudo obtener los datos de la persona", "Error", "error");
             }
         });
-    };
+    }, [external]);
 
     //se obtienen los datos del usuario a modificar
     useEffect(() => {
@@ -92,7 +92,7 @@ export default function Page({ }) {
         peticionPost('persona/modificar/' + external, datos, key).then((info) => {
             if (info.code === 200) {
                 mensajes("Perfil de Usuario modificado correctamente", "Informacion", "success")
-                    router.push("/perfilUsuario");
+                router.push("/modificarPerfil");
             } else if (info.code !== 200 && (info.tag === "token expirado o no valido" || info.tag === "token no valido" || info.tag === "no existe token")) {
                 mensajes(info.tag, "Error", "error");
                 Cookies.remove("token");
