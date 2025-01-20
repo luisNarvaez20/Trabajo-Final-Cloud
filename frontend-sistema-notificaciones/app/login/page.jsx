@@ -28,7 +28,7 @@ export default function Login() {
 
         inicio_sesion(data).then((info) => {
             if (!estaSesion()) {
-                mensajes("Error en inicio de sesion", info.tag, "error")
+                mensajes("Error en inicio de sesion", info.msg, "error")
             } else {
                 //console.log(info);
                 mensajes("Has Ingresado al Sistema", "Bienvenido Usuario", "success");
