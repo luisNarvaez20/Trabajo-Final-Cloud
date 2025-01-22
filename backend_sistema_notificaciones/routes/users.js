@@ -72,5 +72,6 @@ router.get('/persona/obtener/:external', usuarioController.obtener);
 /*GRUPO CONTROLLER*/
 router.post('/grupo/guardar', grupoController.guardar);
 router.get('/grupo/listar/:external', grupoController.listar);
+router.get('/grupo/listar/', grupoController.listarTodos);
 
 module.exports = router;
