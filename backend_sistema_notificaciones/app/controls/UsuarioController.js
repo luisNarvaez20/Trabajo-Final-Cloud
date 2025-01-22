@@ -21,7 +21,7 @@ class UsuarioController {
                 return;
             }
 
-            const claveHash = (clave) => bcypt.hashSync(clave, bcypt.genSaltSync(salRounds), null);
+            const claveHash = (clave) => bcrypt.hashSync(clave, bcrypt.genSaltSync(saltRounds), null);
 
             // Validar Datos duplicados en la Base de datos
             const usuarioExistente = await cuenta.findOne({ where: { user: req.body.user } });
