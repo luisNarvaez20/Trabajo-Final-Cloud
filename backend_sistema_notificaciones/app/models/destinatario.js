@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
 
     destinatario.associate = function (models) {
         destinatario.belongsTo(models.grupo, { foreignKey: 'id_grupo' });
-        destinatario.belongsTo(models.mensaje, { foreignKey: 'id_mensaje' });
     };
 
     return destinatario;

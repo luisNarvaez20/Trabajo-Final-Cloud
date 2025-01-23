@@ -30,7 +30,7 @@ export default function Menu() {
                             </li>
 
                             <li className="nav-item">
-                                <Link className="nav-link active text-white" aria-current="page" href="/configuracion">Enviar Mensaje</Link>
+                                <Link className="nav-link active text-white" aria-current="page" href="/mensaje">Enviar Mensaje</Link>
                             </li>
                         </>
 
