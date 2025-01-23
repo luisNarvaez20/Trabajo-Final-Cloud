@@ -26,7 +26,7 @@ export default function Menu() {
                         <>
 
                             <li className="nav-item">
-                                <Link className="nav-link active text-white" aria-current="page" href="/sensores">Destinatarios</Link>
+                                <Link className="nav-link active text-white" aria-current="page" href="/destinatario">Destinatarios</Link>
                             </li>
 
                             <li className="nav-item">

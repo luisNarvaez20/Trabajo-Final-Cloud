@@ -11,6 +11,8 @@ const CuentaController = require('../app/controls/CuentaController');
 var cuentaController = new CuentaController();
 const GrupoController = require('../app/controls/GrupoController');
 var grupoController = new GrupoController();
+const DestinatarioController = require('../app/controls/DestinatarioController');
+var destinatarioController = new DestinatarioController();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -73,5 +75,10 @@ router.get('/persona/obtener/:external', usuarioController.obtener);
 router.post('/grupo/guardar', grupoController.guardar);
 router.get('/grupo/listar/:external', grupoController.listar);
 router.get('/grupo/listar/', grupoController.listarTodos);
+
+/*DESTINATARIO CONTROLLER*/
+router.post('/destinatario/guardar', destinatarioController.guardar);
+router.get('/destinatario/listar/:external', destinatarioController.obtener);
+router.get('/destinatario/listar/', destinatarioController.listar);
 
 module.exports = router;
