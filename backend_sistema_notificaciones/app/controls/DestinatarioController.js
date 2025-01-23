@@ -4,7 +4,7 @@ var destinatario = models.destinatario;
 var grupo = models.grupo;
 class DestinatarioControl {
     async listar(req, res) {
-        var lista = await sensor.findAll({
+        var lista = await destinatario.findAll({
             include: [
                 { model: models.grupo, as: "grupo", attributes: ['nombre'] },
             ],
@@ -39,7 +39,7 @@ class DestinatarioControl {
             req.body.hasOwnProperty('id_grupo')) {
                 var uuid = require('uuid');
                 var grupoA = await grupo.findOne({
-                    where: { external_id: req.body.grupo },
+                    where: { external_id: req.body.id_grupo },
                 });
                 if (grupoA == undefined || grupoA == null) {
                     res.status(401);
@@ -47,7 +47,7 @@ class DestinatarioControl {
                 } else {
                     //if (motaA.rol == 'ESCLAVO') {
                 var data = {
-                    nombres: req.body.nombre,
+                    nombres: req.body.nombres,
                     apellidos: req.body.apellidos,
                     external_id: uuid.v4(),
                     correo: req.body.correo,
