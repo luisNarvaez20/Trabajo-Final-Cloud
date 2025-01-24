@@ -80,6 +80,7 @@ router.get('/grupo/listar/', grupoController.listarTodos);
 router.post('/destinatario/guardar', destinatarioController.guardar);
 router.get('/destinatario/listar/:external', destinatarioController.obtener);
 router.get('/destinatario/listar/', destinatarioController.listar);
+router.get('/destinatario/listar_grupo/:external', destinatarioController.listar_grupo);
 router.post('/destinatario/editar/:external', destinatarioController.modificar);
 
 module.exports = router;
