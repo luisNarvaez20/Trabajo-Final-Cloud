@@ -74,35 +74,35 @@ class DestinatarioControl {
 
     async modificar(req, res) {
         const external = req.params.external;
-        if (req.body.hasOwnProperty('nombre') &&
-            req.body.hasOwnProperty('descripcion') &&
-            req.body.hasOwnProperty('tipo_sensor') &&
-            req.body.hasOwnProperty('mota')) {
+        if (req.body.hasOwnProperty('nombres') &&
+            req.body.hasOwnProperty('apellidos') &&
+            req.body.hasOwnProperty('correo') &&
+            req.body.hasOwnProperty('id_grupo')) {
 
-                const lista = await sensor.findOne({
+                const lista = await destinatario.findOne({
                     where: { external_id: external },
                 });
 
-            var motaA = await mota.findOne({ where: { external_id: req.body.mota } });
-            if (motaA != undefined) {
+            var grupoA = await grupo.findOne({ where: { external_id: req.body.id_grupo } });
+            if (grupoA != undefined) {
                 var data = {
-                    nombre: req.body.nombre,
+                    nombres: req.body.nombres,
                     external_id: lista.external_id,
-                    descripcion: req.body.descripcion,
-                    tipo_sensor: req.body.tipo_sensor,
-                    id_mota: motaA.id,
+                    apellidos: req.body.apellidos,
+                    correo: req.body.correo,
+                    id_grupo: grupoA.id,
                 }
                     var result = await lista.update(data);                                        
                     if (result === null) {
                         res.status(401);
-                        res.json({ msg: "ERROR_Ronald", tag: "NO se puede crear", code: 401 });
+                        res.json({ msg: "ERROR", tag: "NO se puede crear", code: 401 });
                     } else {
                         res.status(200);
                         res.json({ msg: "OK", code: 200 });
                     }
             } else {
-                res.status(401);
-                res.json({ msg: "ERROR_Ronald", tag: "El dato a buscar no existe", code: 401 });
+                res.status(405);
+                res.json({ msg: "ERROR_Ronald", tag: "El dato a buscar no existe", code: 405 });
             }
         } else {
             res.status(401);

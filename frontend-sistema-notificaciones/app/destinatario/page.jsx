@@ -19,6 +19,7 @@ export default function Page() {
             peticionGet('destinatario/listar', token).then((info) => {
                 if (info.code === 200) {
                     // Filtrar las personas cuya cuenta esté activa (estado = true)
+                    console.log(info.datos)
                     setDestinatario(info.datos);
                     setObt(true);
                 } else {
@@ -56,7 +57,7 @@ export default function Page() {
                                     <td>{dato.apellidos}</td>
                                     <td>{dato.correo}</td>
                                     <td>
-                                        <Link href={`/sensor/editar/${dato.id}`} className="btn btn-warning font-weight-bold" style={{ marginRight: '15px', fontSize: '20px' }}>Editar</Link>
+                                        <Link href={`/destinatario/editar/${dato.id}`} className="btn btn-warning font-weight-bold" style={{ marginRight: '15px', fontSize: '20px' }}>Editar</Link>
                                         <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div className="modal-dialog">
                                                 <div className="modal-content">

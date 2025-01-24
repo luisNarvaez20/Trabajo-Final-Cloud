@@ -59,7 +59,7 @@ export default function Page() {
         setGrupo(info.info);
         setObt(true);
       } else if (info.code !== 200) {
-        router.push("/sensor")
+        router.push("/destinatario")
       } else {
         mensajes("Error al listar usuarios", "Error", "error");
       }

@@ -52,3 +52,16 @@ export async function peticionGet(recurso,  key = "") {
 
     return await response.json();
 }
+
+export async function  get_destinatario(external, token){
+    let datos = null;
+
+    try {
+        datos = await peticionGet(`destinatario/listar/${external}`, token);
+    } catch (error) {
+        console.log(error.response.data);
+        return{"code": 500}
+    }
+    return datos;
+    // TODO agarrar errores
+}
