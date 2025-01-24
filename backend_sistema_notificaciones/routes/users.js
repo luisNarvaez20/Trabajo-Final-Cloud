@@ -13,6 +13,8 @@ const GrupoController = require('../app/controls/GrupoController');
 var grupoController = new GrupoController();
 const DestinatarioController = require('../app/controls/DestinatarioController');
 var destinatarioController = new DestinatarioController();
+const MensajeController = require('../app/controls/MensajeController');
+var mensajeController = new MensajeController();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -82,5 +84,8 @@ router.get('/destinatario/listar/:external', destinatarioController.obtener);
 router.get('/destinatario/listar/', destinatarioController.listar);
 router.get('/destinatario/listar_grupo/:external', destinatarioController.listar_grupo);
 router.post('/destinatario/editar/:external', destinatarioController.modificar);
+
+/*MENSAJE CONTROLLER*/
+router.post('/mensaje/guardar', mensajeController.guardar);
 
 module.exports = router;
