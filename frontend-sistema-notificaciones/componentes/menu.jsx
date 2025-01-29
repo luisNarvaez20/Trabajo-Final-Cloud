@@ -12,7 +12,7 @@ export default function Menu() {
     }
 
     return (
-        <nav className="navbar navbar-expand bg-primary">
+        <nav className="navbar navbar-expand" style={{ background: 'linear-gradient(135deg, #5f8d99, #003366)' }}>
             <div className="container-fluid">
                 <img src="https://siaaf.unl.edu.ec/static/img/logo.png" width={180} alt="logo" />
 
@@ -22,8 +22,10 @@ export default function Menu() {
                             <Link className="nav-link active text-white " aria-current="page" href="/principal">Inicio</Link>
                         </li>
 
-
                         <>
+                            <li className="nav-item">
+                                <Link className="nav-link active text-white" aria-current="page" href="/grupo">Grupo</Link>
+                            </li>
 
                             <li className="nav-item">
                                 <Link className="nav-link active text-white" aria-current="page" href="/destinatario">Destinatarios</Link>
@@ -39,7 +41,7 @@ export default function Menu() {
                         </li>
                     </ul>
                 </div>
-                <label className="text-white" style={{ marginRight: 10 }}>perfil</label>
+                <label className="text-white" style={{ marginRight: 10 }}>Perfil</label>
                 <div className="dropdown">
                     <Link href="/modificarPerfil" style={{ display: 'flex', flexDirection: 'row-reverse', alignItems: 'center' }}>
                         <img src="https://th.bing.com/th/id/OIP.6wpt5K1QyNEKWirI8eyQywHaHa?rs=1&pid=ImgDetMain" className="rounded-circle" height="70" />

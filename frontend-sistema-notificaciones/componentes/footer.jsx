@@ -1,13 +1,16 @@
 export default function Footer() {
     return (
-        <div className="container-fluid p-1 ">
-            <footer className="bg-dark text-center text-lg-start" >
-                <div className="text-center p-1" >
-                    <p className="text-light" style={{fontSize: "1em"}} > © 2025 Copyright:</p>
-                </div>
-            </footer>
-        </div>
-
+        <footer className="bg-dark text-center text-lg-start text-light p-2"
+            style={{
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                height:"4%"
+            }}
+        >
+            <div className="text-center">
+                <p style={{ fontSize: "0.7em" }}>© 2025 Copyright</p>
+            </div>
+        </footer>
     );
-
 }

@@ -181,17 +181,35 @@ export default function Page() {
 
   return (
     <div>
+      <div 
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{
+                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+                    backgroundSize: "20%",
+                    backgroundRepeat: "no-repeat", 
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    zIndex: "-1"
+                }}
+            ></div>
       <Menu />
       <div className="container py-5">
         <div className="text-center mb-4">
-          <h2>Enviar Mensaje</h2>
+        <h1 className="text-center" style={{ fontSize: "3em", color: '#205375' }}>Enviar Mensaje</h1>
         </div>
 
         <div className="d-flex justify-content-center mb-4">
           <div className="card w-75">
             <div className="card-body">
-              <h5 className="card-title d-flex justify-content-center">Seleccionar Grupo</h5>
+            <div className="container-fluid d-flex justify-content-center align-items-center">
+                                <img className="card"
+                                    src="https://static.vecteezy.com/system/resources/previews/000/422/384/non_2x/vector-send-message-icon.jpg"
+                                    style={{ width: 80, height: 80 }}
+                                />
+                            </div>
+                            <br />
               <div className="table-responsive">
+              <label className="form-label" style={{ color: '#1b4f72' }}>Seleccionar Grupo</label>
                 <table className="table table-bordered">
                   <thead className="table-light">
                     <tr>
@@ -227,7 +245,7 @@ export default function Page() {
           <div className="d-flex justify-content-center mb-4">
             <div className="card w-75">
               <div className="card-body">
-                <h5 className="card-title d-flex justify-content-center">Miembros Asociados</h5>
+              <label className="form-label" style={{ color: '#1b4f72' }}>Miembros Asociados</label>
                 <div className="table-responsive">
                   <table className="table table-bordered">
                     <thead className="table-light">
@@ -338,9 +356,12 @@ export default function Page() {
                     )}
                   </div>
 
-                  <button type="submit" className="btn btn-primary w-100" disabled={totalFileSize > 8 * 1024 * 1024 && uploading} >
+                  <button type="submit" className="btn btn-success" disabled={totalFileSize > 8 * 1024 * 1024 && uploading} >
                   {uploading ? "Subiendo..." : "Enviar"}
                   </button>
+                  <a href="/principal" className="btn btn-danger" style={{ marginLeft: '8px'}}>
+                                        Cancelar
+                                    </a>
                 </form>
               </div>
             </div>

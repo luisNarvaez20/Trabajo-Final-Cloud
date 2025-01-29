@@ -57,29 +57,42 @@ export default function Page() {
 
 
     return (
-        <div className="row" >
-            <div className="container-fluid p-1" >
+        <div className="row">
+            <div
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{
+                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+                    backgroundSize: "20%",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    zIndex: "-1"
+                }}
+            ></div>
+            <div className="container-fluid p-1">
                 <Menu />
-                <div className="row d-flex justify-content-center align-items-center vh-100 position-relative"
+                <div
+                    className="d-flex justify-content-center align-items-center vh-100"
                     style={{
                         position: "relative",
                         overflow: "hidden" // Evita que la capa de opacidad sobresalga
-                    }}>
+                    }}
+                >
+                    <div
+                        className="d-flex flex-column"
+                        style={{
+                            width: "700px",
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)", // Centrado absoluto
+                            minHeight: "95%",
+                            width: '1000px' // Asegura que no se reduzca la altura del formulario
+                        }}
+                    >
+                        <h1 className="text-center" style={{ fontSize: "3em", color: '#205375' }}>Crear Grupo</h1>
 
-                    <div style={{
-                        position: "absolute",
-                        top: 0, left: 0, width: "100%", height: "100%",
-                        backgroundImage: "url('https://th.bing.com/th/id/OIP.tGRghsct0RxTiJdW8vKZxgHaEo?rs=1&pid=ImgDetMain')",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        filter: "brightness(50%)", // Reduce el brillo para dar opacidad
-                        zIndex: -1 // Lo coloca detrás de todo
-                    }}></div>
-
-                    <div className="d-flex flex-column" style={{ width: 700 }}>
-                        <h1 className="text-center" style={{ fontSize: "3em", color: 'white' }}>Crear Grupo</h1>
-
-                        <div className='container-fluid' style={{ border: '4px solid #ccc', padding: '20px', borderRadius: '10px', maxWidth: '1000px' }}>
+                        <div className='container-fluid' style={{ backgroundColor: 'white', border: '4px solid #ccc', padding: '20px', borderRadius: '10px', maxWidth: '1000px' }}>
                             <div className="container-fluid d-flex justify-content-center align-items-center">
                                 <img className="card"
                                     src="https://th.bing.com/th/id/R.7ba16062579981d6c084fe578f5538b5?rik=W%2bWfQ4LK4WoHFg&pid=ImgRaw&r=0"
@@ -90,20 +103,22 @@ export default function Page() {
                             <form className="user" onSubmit={handleSubmit(sendData)}>
                                 <div className="row mb-4">
                                     <div className="col">
-                                        <input {...register('nombre')} type="text" name="nombre" id="nombre" className={`form-control ${errors.nombre ? 'is-invalid' : ''}`} placeholder='Ingrese el nombre' />
+                                        <input {...register('nombre')} type="text" name="nombre" id="nombre" className={`form-control ${errors.nombre ? 'is-invalid' : ''}`} placeholder='Ingrese el nombre del grupo' autoComplete="off" style={{ fontSize: '25px' }}/>
+                                        <label className="form-label" style={{ color: '#1b4f72' }}>Nombre</label>
                                         <div className='alert alert-danger invalid-feedback'>{errors.nombre?.message}</div>
                                     </div>
                                     <div className="col">
-                                        <input {...register('tipo')} type="text" name="tipo" id="tipo" className={`form-control ${errors.tipo ? 'is-invalid' : ''}`} placeholder='Ingrese el tipo de grupo' />
+                                        <input {...register('tipo')} type="text" name="tipo" id="tipo" className={`form-control ${errors.tipo ? 'is-invalid' : ''}`} placeholder='Ingrese el tipo de grupo' autoComplete="off" style={{ fontSize: '25px' }}/>
+                                        <label className="form-label" style={{ color: '#1b4f72' }}>Tipo</label>
                                         <div className='alert alert-danger invalid-feedback'>{errors.tipo?.message}</div>
                                     </div>
                                 </div>
 
                                 <div className="d-flex justify-content-between">
-                                    <a href="/principal" className="btn btn-danger" style={{ marginLeft: '200px' }}>
+                                    <a href="/principal" className="btn btn-danger" style={{ marginLeft: '300px' , fontSize:'22px' }}>
                                         Cancelar
                                     </a>
-                                    <button type='submit' className="btn btn-success" style={{ marginRight: '200px' }}>
+                                    <button type='submit' className="btn btn-success" style={{ marginRight: '300px', fontSize:'22px' }}>
                                         Guardar
                                     </button>
                                 </div>
@@ -114,6 +129,5 @@ export default function Page() {
                 <Footer />
             </div>
         </div>
-
     );
 }

@@ -93,7 +93,24 @@ export default function Page({ params }) {
       className="row justify-content-center"
       style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
     >
-      <div className="d-flex flex-column">
+      <div 
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{
+                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+                    backgroundSize: "20%",
+                    backgroundRepeat: "no-repeat", 
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    zIndex: "-1"
+                }}
+            ></div>
+            <Menu></Menu>
+      <div className="d-flex flex-column justify-content-center align-items-center"  style={{
+                            position: "absolute",
+                            top: "39%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)", // Centrado absoluto
+                        }}>
         <h1
           style={{
             color: '#205375',
@@ -107,12 +124,20 @@ export default function Page({ params }) {
         <div
           className="container-fluid"
           style={{
+            backgroundColor: 'white',
             border: '4px solid #ccc',
             padding: '20px',
             borderRadius: '10px',
             width: '1000px',
           }}
         >
+          <div className="container-fluid d-flex justify-content-center align-items-center">
+                                <img className="card"
+                                    src="https://static.vecteezy.com/system/resources/previews/020/720/152/non_2x/recipient-icon-design-free-vector.jpg"
+                                    style={{ width: 100, height: 100 }}
+                                />
+                            </div>
+                            
           <br />
           <form className="destinatario" onSubmit={handleSubmit(sendData)}>
             <div className="row mb-4">
@@ -188,21 +213,20 @@ export default function Page({ params }) {
                 </div>
               </div>
             </div>
-            <div className="d-flex justify-content-center mt-4">
+            <div className="d-flex justify-content-between">
               <Link
                 href="/destinatario"
-                className="btn btn-danger mr-3"
-                style={{ background: 'red', fontSize: '25px' }}
+                className="btn btn-danger"
+                style={{ marginLeft: '300px', fontSize: '22px' }}
               >
                 CANCELAR
               </Link>
               <button
                 type="submit"
-                className="btn btn-success ml-3"
+                className="btn btn-success"
                 style={{
-                  background: '#205375',
-                  marginLeft: '20px',
-                  fontSize: '25px',
+                  marginRight: '300px',
+                  fontSize: '22px',
                 }}
               >
                 GUARDAR
@@ -212,6 +236,7 @@ export default function Page({ params }) {
         </div>
       </div>
       <br />
+      <Footer />
     </div>
   );
 }

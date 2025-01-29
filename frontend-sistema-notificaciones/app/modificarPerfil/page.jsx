@@ -42,19 +42,29 @@ export default function Page() {
         obtenerDatos();
     }, [external]); // Solo se ejecuta cuando `external` cambia
 
-
-
     return (
         <div className="row" >
+            <div 
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{
+                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+                    backgroundSize: "20%",
+                    backgroundRepeat: "no-repeat", 
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    zIndex: "-1"
+                }}
+            ></div>
             <Menu />
-            <center>
+            <div>
                 <div className="container py-5 h-100">
                     <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="col col-lg-9 mb-5 mb-lg-0">
+                        <h1 className="text-center" style={{ fontSize: "3em", color: '#205375' }}>Datos del Usuario</h1>
                             <div className="card mb-3" style={{ borderRadius: ".5rem" }}>
                                 <div className="row g-0">
                                     <div className="col-md-4 gradient-custom text-center text-white"
-                                        style={{ border: '0.5rem', borderBottomLeftRadius: '0.5rem', background: `linear-gradient(to right bottom, rgba(174, 214, 241 ), rgba(253, 160, 133, 1))` }}>
+                                        style={{ border: '0.5rem', borderBottomLeftRadius: '0.5rem', background: `linear-gradient(to right bottom, rgba(174, 214, 241 ), rgba(253, 160, 133, 1))` }} >
                                         <img src="https://th.bing.com/th/id/R.013f4a5d17ae938ce0107809b348c9f9?rik=nyHZlcm9FRIydA&pid=ImgRaw&r=0"
                                             alt="Avatar" className="img-fluid my-5" style={{ width: "80px" }} />
                                         <h5>{persona.nombres + " " + persona.apellidos}</h5>
@@ -104,12 +114,9 @@ export default function Page() {
                         </div>
                     </div>
                 </div>
-            </center>
+            </div>
             <br />
             <Footer />
         </div>
-
     );
-
 }
-

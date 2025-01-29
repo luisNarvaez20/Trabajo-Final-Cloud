@@ -106,11 +106,36 @@ export default function Page({ }) {
 
     return (
         <div className="wrapper" >
+            <div 
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{
+                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+                    backgroundSize: "20%",
+                    backgroundRepeat: "no-repeat", 
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    zIndex: "-1"
+                }}
+            ></div>
             <Menu />
             <center>
-                <div className="d-flex flex-column" style={{ width: 700 }}>
-                    <h1 style={{ textAlign: "center", fontSize: "1.5em" }}>Modificar Perfil</h1>
-                    <div className='container-fluid' style={{ border: '4px solid #ccc', padding: '20px', borderRadius: '10px', maxWidth: '1000px', margin: 'auto' }}>
+                <div className="d-flex flex-column justify-content-center align-items-center"  style={{
+                            position: "absolute",
+                            top: "41%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)", // Centrado absoluto
+                        }}>
+                <h1
+          style={{
+            color: '#205375',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          Modificar Perfil
+        </h1>
+                    <div className='container-fluid' style={{ backgroundColor: 'white', border: '4px solid #ccc', padding: '20px', borderRadius: '10px', maxWidth: '1000px', margin: 'auto' }}>
 
                         <div className="container-fluid" >
 

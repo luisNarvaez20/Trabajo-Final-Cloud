@@ -73,15 +73,17 @@ export default function Page() {
                 overflow: "hidden" // Evita que la capa de opacidad sobresalga
             }}>
 
-            <div style={{
-                position: "absolute",
-                top: 0, left: 0, width: "100%", height: "100%",
-                backgroundImage: "url('https://th.bing.com/th/id/OIP.tGRghsct0RxTiJdW8vKZxgHaEo?rs=1&pid=ImgDetMain')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                filter: "brightness(50%)", // Reduce el brillo para dar opacidad
-                zIndex: -1 // Lo coloca detrás de todo
-            }}></div>
+<div 
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{
+                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+                    backgroundSize: "20%",
+                    backgroundRepeat: "no-repeat", 
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    zIndex: "-1"
+                }}
+            ></div>
 
             <div className="d-flex flex-column" style={{ width: 700 }}>
                 <h1 className="text-center" style={{ fontSize: "3em", color: 'white' }}>Registrar Usuario</h1>
