@@ -22,8 +22,13 @@ export default function Page() {
                     console.log(info.datos);
                     setDestinatario(info.datos);
                     setObt(true);
+                } else if (["token expirado o no valido", "token no valido", "no existe token"].includes(info.tag)) {
+                    mensajes(info.tag, "Error", "error");
+                    Cookies.remove("token");
+                    borrarSesion();
+                    router.push("/login");
                 } else {
-                    mensajes("Error al listar destinatarios", "Error", "error");
+                    mensajes("No se pudo obtener los destinatarios", "Error", "error");
                 }
             });
         }
