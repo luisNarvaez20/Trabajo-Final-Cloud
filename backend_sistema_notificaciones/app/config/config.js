@@ -8,6 +8,7 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
-    operatorAliases: process.env.DB_OPERATOR_ALIASES === "true", 
+    operatorAliases: process.env.DB_OPERATOR_ALIASES === "true",
+    messageLogicAppUrl: process.env.MESSAGE_LOGIC_APP_URL 
   },
 };

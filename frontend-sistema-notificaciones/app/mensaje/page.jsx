@@ -115,9 +115,7 @@ export default function Page() {
     const datos = {
       'asunto': data.asunto,
       'contenido': data.contenido,
-      'destinatarios': [
-        selectedRecipient.email
-      ],
+      'grupo': data.external_id || selectedGroup.external_id,
       'archivos': archivosConvertidos
     };
 
