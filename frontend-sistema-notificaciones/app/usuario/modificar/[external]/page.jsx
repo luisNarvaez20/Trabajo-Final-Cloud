@@ -105,112 +105,183 @@ export default function Page({ }) {
     };
 
     return (
-        <div className="wrapper" >
-            <div 
+        <div className="wrapper">
+            {/* Fondo con imagen difusa */}
+            <div
                 className="position-fixed top-0 start-0 w-100 h-100"
                 style={{
                     backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
                     backgroundSize: "20%",
-                    backgroundRepeat: "no-repeat", 
+                    backgroundRepeat: "no-repeat",
                     backgroundPosition: "center",
-                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    filter: "blur(4px)",
                     zIndex: "-1"
                 }}
             ></div>
+    
+            {/* Menú */}
             <Menu />
-            <center>
-                <div className="d-flex flex-column justify-content-center align-items-center"  style={{
-                            position: "absolute",
-                            top: "41%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)", // Centrado absoluto
-                        }}>
-                <h1
-          style={{
-            color: '#205375',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          Modificar Perfil
-        </h1>
-                    <div className='container-fluid' style={{ backgroundColor: 'white', border: '4px solid #ccc', padding: '20px', borderRadius: '10px', maxWidth: '1000px', margin: 'auto' }}>
-
-                        <div className="container-fluid" >
-
-                            <img className="card" src="https://cdn-icons-png.flaticon.com/512/1511/1511041.png" style={{ width: 90, height: 90 }} />
+    
+            {/* Contenedor principal */}
+            <div
+                className="d-flex justify-content-center align-items-center"
+                style={{
+                    position: "relative",
+                    minHeight: "calc(100vh - 80px)",  // Ajusta para dejar espacio para el pie de página
+                    overflow: "hidden"  // Evita que la capa de opacidad sobresalga
+                }}
+            >
+                <div
+                    className="d-flex flex-column"
+                    style={{
+                        width: "700%",
+                        maxWidth: "700px",
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)", // Centrado absoluto
+                        minHeight: "95%",
+                        width: '1000px'
+                    }}
+                >
+                    <h1
+                        style={{
+                            color: '#205375',
+                            textAlign: 'center',
+                        }}
+                    >
+                        Modificar Perfil
+                    </h1>
+    
+                    {/* Formulario */}
+                    <div className="container-fluid" style={{
+                        backgroundColor: 'white',
+                        border: '4px solid #ccc',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        maxWidth: '100%',
+                        margin: 'auto'
+                    }}>
+                        {/* Imagen de perfil */}
+                        <div className="container-fluid d-flex justify-content-center">
+                            <img
+                                className="card"
+                                src="https://cdn-icons-png.flaticon.com/512/1511/1511041.png"
+                                style={{ width: 90, height: 90 }}
+                                alt="Icono de perfil"
+                            />
                         </div>
                         <br />
+    
+                        {/* Formulario de modificación */}
                         <form className="user" onSubmit={handleSubmit(sendData)}>
-
-                            {/*Ingresar nombre y apellido*/}
+    
+                            {/* Nombres y apellidos */}
                             <div className="row mb-4">
                                 <div className="col">
-                                    <input {...register('nombres')} name="nombres" id="nombres" className={`form-control ${errors.nombres ? 'is-invalid' : ''}`} placeholder='Ingrese los nombres' />
-                                    <div className='alert alert-danger invalid-feedback'>{errors.nombres?.message}</div>
+                                    <input
+                                        {...register('nombres')}
+                                        name="nombres"
+                                        id="nombres"
+                                        className={`form-control ${errors.nombres ? 'is-invalid' : ''}`}
+                                        placeholder="Ingrese los nombres"
+                                    />
+                                    <div className="alert alert-danger invalid-feedback">{errors.nombres?.message}</div>
                                 </div>
                                 <div className="col">
-                                    <input {...register('apellidos')} name="apellidos" id="apellidos" className={`form-control ${errors.apellidos ? 'is-invalid' : ''}`} placeholder='Ingrese los apellidos' />
-                                    <div className='alert alert-danger invalid-feedback'>{errors.apellidos?.message}</div>
+                                    <input
+                                        {...register('apellidos')}
+                                        name="apellidos"
+                                        id="apellidos"
+                                        className={`form-control ${errors.apellidos ? 'is-invalid' : ''}`}
+                                        placeholder="Ingrese los apellidos"
+                                    />
+                                    <div className="alert alert-danger invalid-feedback">{errors.apellidos?.message}</div>
                                 </div>
                             </div>
-
-                            {/*Ingresar cedula y telefono*/}
+    
+                            {/* Dirección y teléfono */}
                             <div className="row mb-4">
                                 <div className="col">
-                                    <input {...register('direccion')} name="direccion" id="direccion" className={`form-control ${errors.direccion ? 'is-invalid' : ''}`} placeholder='Ingrese su direccion' />
-                                    <div className='alert alert-danger invalid-feedback'>{errors.direccion?.message}</div>
+                                    <input
+                                        {...register('direccion')}
+                                        name="direccion"
+                                        id="direccion"
+                                        className={`form-control ${errors.direccion ? 'is-invalid' : ''}`}
+                                        placeholder="Ingrese su dirección"
+                                    />
+                                    <div className="alert alert-danger invalid-feedback">{errors.direccion?.message}</div>
                                 </div>
                                 <div className="col">
-                                    <input {...register('telefono')} name="telefono" id="telefono" className={`form-control ${errors.telefono ? 'is-invalid' : ''}`} placeholder='Ingrese nro telefono' />
-                                    <div className='alert alert-danger invalid-feedback'>{errors.telefono?.message}</div>
+                                    <input
+                                        {...register('telefono')}
+                                        name="telefono"
+                                        id="telefono"
+                                        className={`form-control ${errors.telefono ? 'is-invalid' : ''}`}
+                                        placeholder="Ingrese nro teléfono"
+                                    />
+                                    <div className="alert alert-danger invalid-feedback">{errors.telefono?.message}</div>
                                 </div>
                             </div>
-
-                            {/*Ingresar clave*/}
+    
+                            {/* Clave y usuario */}
                             <div className="row mb-4">
                                 <div className="col">
-                                    <input {...register('clave')} name="clave" id="clave" className="form-control" placeholder='Ingrese una clave' />
-
+                                    <input
+                                        {...register('clave')}
+                                        name="clave"
+                                        id="clave"
+                                        className="form-control"
+                                        placeholder="Ingrese una clave"
+                                    />
                                 </div>
                                 <div className="col">
-                                    <input {...register('usuario')} name="usuario" id="usuario" className="form-control" placeholder='Ingrese un usuario' />
-
+                                    <input
+                                        {...register('usuario')}
+                                        name="usuario"
+                                        id="usuario"
+                                        className="form-control"
+                                        placeholder="Ingrese un usuario"
+                                    />
                                 </div>
                             </div>
-
-                            {/* Seleccionar rol*/}
-
+    
+                            {/* Correo */}
                             <div className="row mb-4">
                                 <div className="col">
-                                    <input {...register('correo')} name="correo" id="correo" className={`form-control ${errors.correo ? 'is-invalid' : ''}`} placeholder='Ingrese correo electronico' />
-                                    <div className='alert alert-danger invalid-feedback'>{errors.correo?.message}</div>
+                                    <input
+                                        {...register('correo')}
+                                        name="correo"
+                                        id="correo"
+                                        className={`form-control ${errors.correo ? 'is-invalid' : ''}`}
+                                        placeholder="Ingrese correo electrónico"
+                                    />
+                                    <div className="alert alert-danger invalid-feedback">{errors.correo?.message}</div>
                                 </div>
-
-
                             </div>
-
+    
                             <hr />
-
-                            <>
-                                <Link href="/modificarPerfil" className="btn btn-danger" style={{ flex: '1', marginRight: '4px' }}>
+    
+                            {/* Botones de cancelar y guardar */}
+                            <div className="d-flex justify-content-between">
+                                <Link href="/modificarPerfil" className="btn btn-danger" style={{ width: '48%' }}>
                                     Cancelar
                                 </Link>
-                            </>
-
-                            <button type="submit" className="btn btn-success" style={{ flex: '1', marginLeft: '4px' }}>
-                                Guardar
-                            </button>
-
+                                <button type="submit" className="btn btn-success" style={{ width: '48%' }}>
+                                    Guardar
+                                </button>
+                            </div>
+    
                         </form>
-
                     </div>
                 </div>
-            </center>
+            </div>
             <br />
+            <br />
+    
+            {/* Pie de página */}
             <Footer />
         </div>
-
     );
 }
