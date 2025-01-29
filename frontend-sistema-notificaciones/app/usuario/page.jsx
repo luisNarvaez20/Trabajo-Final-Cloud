@@ -59,7 +59,7 @@ export default function Page() {
                 borrarSesion();
                 router.push("/login")
             } else {
-                mensajes("Usuario no se pudo guardar", "Error", "error")
+                mensajes("Usuario no se pudo guardar", "Error", info.msg )
             }
         });
     };
