@@ -27,6 +27,32 @@ export async function peticionPost(recurso, data, key = "") {
     return  response.json();
 }
 
+export async function peticionPost2(recurso, data, key = "") {
+    let headers = {};
+    let body = data;
+
+    if (!(data instanceof FormData)) {
+        headers = {
+            'Accept': 'application/json',
+            "Content-Type": "application/json",
+        };
+        body = JSON.stringify(data);
+    }
+
+    if (key !== "") {
+        headers["token-api"] = key;
+    }
+
+    const response = await fetch(URL + recurso, {
+        method: "POST",
+        headers: headers, // No incluir Content-Type si es FormData
+        body: body,
+    });
+
+    return response.json();
+}
+
+
 
 //METODO GENERAL PARA PETICIONES GET
 export async function peticionGet(recurso,  key = "") {
