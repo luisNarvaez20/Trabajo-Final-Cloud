@@ -25,7 +25,7 @@ export function middleware(request) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    if (!tokenValue && request.nextUrl.pathname.startsWith('/perfilUsuario')) {
+    if (!tokenValue && request.nextUrl.pathname.startsWith('/modificarPerfil')) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
@@ -37,5 +37,5 @@ export function middleware(request) {
 // See "Matching Paths" below to learn more
 export const config = {
     matcher: ['/destinatario(.*)', '/mensaje(.*)', '/grupo(.*)',
-        '/login', '/principal', '/perfilUsuario'],
+        '/login', '/principal', '/modificarPerfil'],
 }
