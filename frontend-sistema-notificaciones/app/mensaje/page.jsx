@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { peticionGet, peticionPost, peticionPost2 } from "../../hooks/Conexion";
 import { getToken, getExternal } from "../../hooks/SessionUtilClient";
 import Menu from "../../componentes/menu";
+import imageCompression from 'browser-image-compression';
 
 export default function Page() {
   const [files, setFiles] = useState([]);
@@ -67,56 +68,66 @@ export default function Page() {
   const formOptions = { resolver: yupResolver(validationShema) };
   const { register, handleSubmit, formState, setValue } = useForm(formOptions);
   const { errors } = formState;
+//convertir archivo a string base64
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+  
+  const compressFile = async (file) => {
+    const options = {
+      maxSizeMB: 5,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return compressedFile;
+    } catch (error) {
+      console.error(error);
+      return file;
+    }
+  };
 
-  const sendData = (data) => {
+  const sendData = async (data) => {
     if (!selectedRecipient) {
       mensajes("Debe seleccionar un destinatario", "Error", "error");
       return;
     }
-  
-    const currentDate = new Date().toISOString();
+    const archivosConvertidos = await Promise.all(
+      files.map(async (archivo) => {
+        //const archivoComprimido = await compressFile(archivo);
+        const contenidoBase64 = await convertBase64(archivo);
+        return {
+          nombre: archivo.name,
+          contenido: contenidoBase64.split(',')[1] // Remover el prefijo de data URL
+        };
+      })
+    );
     const datos = {
       'asunto': data.asunto,
       'contenido': data.contenido,
-      'fecha': currentDate,
-      'tipo': data.tipo,
-      'id_usuario': external,
-      'id_destinatario': selectedRecipient.id,
+      'grupo': data.external_id || selectedGroup.external_id,
+      'archivos': archivosConvertidos
     };
-  
-    peticionPost('mensaje/guardar', datos, key).then((info) => {
+
+    peticionPost('mensaje/enviar', datos, key).then((info) => {
       if (info.code !== 200) {
         mensajes("El mensaje no se pudo enviar", "Error", "error");
         return;
       }
-  
-      const id_mensaje = info.info; 
-  
-      if (files && files.length > 0) {
-        files.forEach((archivo) => {
-            const formData = new FormData();
-            formData.append('nombre', "dada");
-            formData.append('tipo', "pdf");
-            formData.append('id_mensaje', id_mensaje);
-            formData.append('archivo', archivo);
-            
-            peticionPost2('mensaje/guardar_archivo', formData, key).then((fileInfo) => {
-                if (fileInfo.code !== 200) {
-                    mensajes("El mensaje se envió, pero hubo un error al subir un archivo", "Advertencia", "warning");
-                } else {
-                    mensajes("Archivo subido correctamente", "Información", "success");
-                }
-            });
-        });
-    
-        mensajes("Mensaje enviado correctamente", "Información", "success");
-        limpiarFormulario();
-    } else {
-        mensajes("Mensaje enviado correctamente", "Información", "success");
-        limpiarFormulario();
-    }
+
+      mensajes("El mensaje se envió correctamente", "Éxito", "success");
     });
-  };
+};
   
   const limpiarFormulario = () => {
     setValue("asunto", "");

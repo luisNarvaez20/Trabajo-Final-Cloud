@@ -19,7 +19,7 @@ export default function Page() {
         if (!obt) {
             peticionGet('destinatario/listar', token).then((info) => {
                 if (info.code === 200) {
-                    console.log(info.datos);
+                    console.log(info);
                     setDestinatario(info.datos);
                     setObt(true);
                 } else if (["token expirado o no valido", "token no valido", "no existe token"].includes(info.tag)) {
