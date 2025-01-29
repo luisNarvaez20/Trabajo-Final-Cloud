@@ -17,6 +17,7 @@
     "js-cookie": "^3.0.5",
     "next": "15.1.4",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.8",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "sweetalert": "^2.1.2",
