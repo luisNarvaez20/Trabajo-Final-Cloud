@@ -30,37 +30,35 @@ export default function Principal() {
         });
     }, [external, key, router]);
 
-    const getRandomColor = () => {
-        const colors = ["#FF5733", "#33FF57", "rgba(255, 252, 71, 0.7)", "rgba(71, 255, 209, 0.7)", "rgba(86, 255, 71, 0.7)", "rgba(255, 99, 71, 0.7)",
-            "rgba(55, 161, 73, 0.7)", "rgba(145, 255, 163, 0.7)", "rgba(231, 236, 92, 0.7)", "rgba(228, 158, 88, 0.7)", "rgba(254, 104, 104, 0.7)",
-            "rgba(55, 138, 161, 0.7)", "rgba(250, 148, 247, 0.7)", "rgba(215, 153, 153, 0.7)"
-        ];
-        return colors[Math.floor(Math.random() * colors.length)];
-    };
-
     return (
-        <div className="row">
-            <div className="container-fluid p-1">
+        <div className="d-flex flex-column min-vh-100 position-relative">
+            <div 
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{
+                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+                    backgroundSize: "20%",
+                    backgroundRepeat: "no-repeat", 
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+                    zIndex: "-1"
+                }}
+            ></div>
+
+            {/* Contenido */}
+            <div className="container-fluid p-1 position-relative" style={{ zIndex: "1" }}>
                 <Menu />
                 <br />
-                <div className="d-flex flex-column align-items-center">
+                <div className="d-flex flex-column align-items-center flex-grow-1">
                     <div className="container">
                         <div className="row">
                             {grupos.length > 0 ? (
                                 grupos.map((card, index) => (
                                     <div key={index} className="col-md-4 mb-3">
-                                        <div
-                                            className="card h-100"
-                                            style={{ backgroundColor: getRandomColor(), color: "black" }} // Color aleatorio
-                                        >
+                                        <div className="card h-100" style={{ backgroundColor: "rgba(255,255,255,0.8)", color: "black" }}>
                                             <div className="card-body">
-                                                <h5 className="card-title">{card.nombre}</h5>
-                                                <p className="card-text">{card.tipo}</p>
-                                                {/* Botón dentro de cada card */}
-                                                <button
-                                                    className="btn btn-light mt-2"
-                                                    onClick={() => alert(`Grupo seleccionado: ${card.nombre}`)}
-                                                >
+                                                <h5 className="card-title">Grupo: {card.nombre}</h5>
+                                                <p className="card-text">Tipo: {card.tipo}</p>
+                                                <button className="btn btn-light mt-2" onClick={() => alert(`Grupo seleccionado: ${card.nombre}`)} style={{backgroundColor: 'turquoise'}}>
                                                     Ver Detalles
                                                 </button>
                                             </div>
@@ -75,23 +73,10 @@ export default function Principal() {
                         </div>
                     </div>
                 </div>
-
-                {/* Botón flotante que se queda fijo en la pantalla */}
-                <a
-                    className="btn btn-primary position-fixed bottom-0 end-0 m-3"
-                    style={{
-                        width: '80px',   // Tamaño del botón
-                        height: '60px',  // Tamaño del botón
-                        background: 'linear-gradient(145deg,rgb(105, 236, 206), #0077cc)',
-                        zIndex: 10,      // Asegura que el botón esté encima de otros elementos
-                    }}
-                    href='/grupo'
-                >
-                    Crear Grupo
-                </a>
-
-                <Footer />
             </div>
+
+            {/* Footer siempre abajo */}
+            <Footer className="mt-auto position-relative" style={{ zIndex: "1" }} />
         </div>
     );
 }
