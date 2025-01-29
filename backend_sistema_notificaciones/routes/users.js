@@ -21,30 +21,25 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+//Middleware para autenticacion 
 var auth = function middleware(req, res, next) {
-  const token = req.headers['x-api-token'];
+  const token = req.headers["token-api"];
   if (token) {
-    require('dotenv').config();
+    require("dotenv").config();
     const llave = process.env.KEY_SQ;
-
     jwt.verify(token, llave, async (err, decoded) => {
       if (err) {
         res.status(401);
-        res.json({
-          msg: "TOKEN NO VALIDO",
-          code: 401
-        });
+        res.json({ tag: "token expirado o no valido", code: 401 });
       } else {
-        var models = require('../models');
-        var cuenta = models.cuenta;
+        var models = require("../app/models");
         req.decoded = decoded;
-        let aux = await cuenta.findOne({ where: { external_id: req.decoded.external } })
-        if (aux === null) {
+        let aux = await models.cuenta.findOne({
+          where: { external_id: req.decoded.external },
+        });
+        if (!aux) {
           res.status(401);
-          res.json({
-            msg: "TOKEN NO VALIDO O EXPIRADO",
-            code: 401
-          });
+          res.json({ tag: "token no valido", code: 401 });
         } else {
           next();
         }
@@ -52,13 +47,10 @@ var auth = function middleware(req, res, next) {
     });
   } else {
     res.status(401);
-    res.json({
-      msg: "NO EXISTE TOKEN",
-      code: 401
-    });
+    res.json({ tag: "No existe token", code: 401 });
   }
+};
 
-}
 
 /*-----------------------------------------------------------------RUTAS------------------------------------------------------------------*/
 
@@ -70,23 +62,24 @@ router.post('/cuenta/sesion', [
 
 /*PERSONA CONTROLLER*/
 router.post('/persona/registrar', usuarioController.guardar);
-router.post('/persona/modificar/:external', usuarioController.modificar);
-router.get('/persona/obtener/:external', usuarioController.obtener);
+router.post('/persona/modificar/:external',auth, usuarioController.modificar);
+router.get('/persona/obtener/:external',auth, usuarioController.obtener);
 
 /*GRUPO CONTROLLER*/
-router.post('/grupo/guardar', grupoController.guardar);
-router.get('/grupo/listar/:external', grupoController.listar);
-router.get('/grupo/listar/', grupoController.listarTodos);
+router.post('/grupo/guardar',auth, grupoController.guardar);
+router.get('/grupo/listar/:external',auth, grupoController.listar);
+router.get('/grupo/listar/',auth, grupoController.listarTodos);
 
 /*DESTINATARIO CONTROLLER*/
-router.post('/destinatario/guardar', destinatarioController.guardar);
-router.get('/destinatario/listar/:external', destinatarioController.obtener);
-router.get('/destinatario/listar/', destinatarioController.listar);
-router.get('/destinatario/listar_grupo/:external', destinatarioController.listar_grupo);
-router.post('/destinatario/editar/:external', destinatarioController.modificar);
+router.post('/destinatario/guardar', auth, destinatarioController.guardar);
+router.get('/destinatario/listar/:external', auth, destinatarioController.obtener);
+router.get('/destinatario/listar/', auth, destinatarioController.listar);
+router.get('/destinatario/listar_grupo/:external', auth, destinatarioController.listar_grupo);
+router.post('/destinatario/editar/:external', auth, destinatarioController.modificar);
 
 /*MENSAJE CONTROLLER*/
 router.post('/mensaje/guardar', mensajeController.guardar);
 router.post('/mensaje/guardar_archivo', mensajeController.guardar_archivo);
 router.post('/mensaje/enviar', mensajeController.enviarMensajeLogicApps);
+
 module.exports = router;
