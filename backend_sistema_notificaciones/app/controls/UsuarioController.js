@@ -1,12 +1,12 @@
 'use strict';
-const { validationResult} = require('express-validator');
+const { validationResult } = require('express-validator');
 
 var models = require('../models/');
 var usuario = models.usuario;
 var cuenta = models.cuenta;
 
-const bcypt = require('bcrypt');
-const salRounds = 8;
+const saltRounds = 8;
+const bcrypt = require('bcrypt');
 
 
 class UsuarioController {
@@ -21,7 +21,7 @@ class UsuarioController {
                 return;
             }
 
-            const claveHash = (clave) => bcypt.hashSync(clave, bcypt.genSaltSync(salRounds), null);
+            const claveHash = (clave) => bcrypt.hashSync(clave, bcrypt.genSaltSync(saltRounds), null);
 
             // Validar Datos duplicados en la Base de datos
             const usuarioExistente = await cuenta.findOne({ where: { user: req.body.user } });
@@ -34,7 +34,7 @@ class UsuarioController {
             } else if (telefonoExistente) {
                 res.json({ msg: "Telefono ya existe", code: 500 });
                 return;
-            } else if (usuarioExistente){
+            } else if (usuarioExistente) {
                 res.json({ msg: "Usuario ya existe", code: 500 });
                 return;
             }
@@ -54,7 +54,7 @@ class UsuarioController {
 
             try {
                 // Crear usuario en la base de datos
-                await usuario.create(data, {include: [ { model: cuenta, as: "cuenta" },], transaction });
+                await usuario.create(data, { include: [{ model: cuenta, as: "cuenta" },], transaction });
 
                 await transaction.commit();
                 res.status(200).json({ msg: "USUARIO CREADO CON EXITO", code: 200 });
@@ -82,7 +82,7 @@ class UsuarioController {
                 ],
                 where: { external_id: req.params.external } // Utiliza req.params.external para obtener el external desde la URL
             });
-            
+
             res.json({ msg: 'OK!', code: 200, info: listar });
         } catch (error) {
             console.error('Error al obtener el perfil de usuario:', error);
@@ -93,40 +93,57 @@ class UsuarioController {
     //METODO PARA MODIFICAR DATOS DE UN USUARIO
     async modificar(req, res) {
 
-        var person = await usuario.findOne({ where: { external_id: req.body.external } });
-        if (person === null) {
-      
-            res.status(400);
-            res.json({
-                msg: "ERROR", tag: "Usuario no existe", code: 400
-            });
+        var person = await usuario.findOne({
+            where: { external_id: req.params.external },
+            include: [
+                { model: models.cuenta, as: "cuenta", attributes: ['external_id'] },
+            ],
+        });
 
+        if (person === null || person === undefined) {
+            res.status(400);
+            res.json({ msg: "Error", tag: "El usuario a modificar no existe", code: 400 });
         } else {
+
+            var claveHash = function (clave) {
+                return bcrypt.hashSync(clave, bcrypt.genSaltSync(saltRounds));
+            };
+
             var uuid = require('uuid');
+
             person.nombres = req.body.nombres,
-            person.apellidos = req.body.apellidos,
-            person.telefono = req.body.telefono,
-            person.direccion = req.body.direccion,
-            person.correo = req.body.correo,
-            person.external = uuid.v4();
+                person.apellidos = req.body.apellidos,
+                person.telefono = req.body.telefono,
+                person.direccion = req.body.direccion,
+                person.correo = req.body.correo,
+                person.user = req.body.usuario,
+                person.external = uuid.v4();
+
+            var result2;
+
+            if (req.body.clave !== '') {
+                var cuentaAux = await cuenta.findOne({ where: { external_id: person.cuenta.external_id } });
+                cuentaAux.clave = claveHash(req.body.clave);
+                result2 = await cuentaAux.save();
+            }
+
+            if (req.body.correo !== '') {
+                var cuentaAux = await cuenta.findOne({ where: { external_id: person.cuenta.external_id } });
+                cuentaAux.correo = req.body.correo;
+                result2 = await cuentaAux.save();
+            }
 
             var result = await person.save();
 
-            if (result === null) {
+            if (result === null || result2 === null) {
                 res.status(400);
-                res.json({
-                    msg: "ERROR", tag: "No se han modificado los datos", code: 400
-                });
+                res.json({ msg: "Error", tag: "No se han modificado los datos", code: 400 });
             } else {
                 res.status(200);
-                res.json({
-                    msg: "OK", tag: "Datos modificados con exito",code: 200 
-                });
+                res.json({ msg: "Success", tag: "Datos modificados correctamente", code: 200 });
             }
         }
     }
-    
-
 }
 
 module.exports = UsuarioController;

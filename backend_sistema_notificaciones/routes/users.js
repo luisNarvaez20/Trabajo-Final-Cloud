@@ -9,6 +9,12 @@ const UsuarioController = require('../app/controls/UsuarioController');
 var usuarioController = new UsuarioController();
 const CuentaController = require('../app/controls/CuentaController');
 var cuentaController = new CuentaController();
+const GrupoController = require('../app/controls/GrupoController');
+var grupoController = new GrupoController();
+const DestinatarioController = require('../app/controls/DestinatarioController');
+var destinatarioController = new DestinatarioController();
+const MensajeController = require('../app/controls/MensajeController');
+var mensajeController = new MensajeController();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -64,7 +70,23 @@ router.post('/cuenta/sesion', [
 
 /*PERSONA CONTROLLER*/
 router.post('/persona/registrar', usuarioController.guardar);
-router.post('/persona/modificar', usuarioController.modificar);
+router.post('/persona/modificar/:external', usuarioController.modificar);
 router.get('/persona/obtener/:external', usuarioController.obtener);
+
+/*GRUPO CONTROLLER*/
+router.post('/grupo/guardar', grupoController.guardar);
+router.get('/grupo/listar/:external', grupoController.listar);
+router.get('/grupo/listar/', grupoController.listarTodos);
+
+/*DESTINATARIO CONTROLLER*/
+router.post('/destinatario/guardar', destinatarioController.guardar);
+router.get('/destinatario/listar/:external', destinatarioController.obtener);
+router.get('/destinatario/listar/', destinatarioController.listar);
+router.get('/destinatario/listar_grupo/:external', destinatarioController.listar_grupo);
+router.post('/destinatario/editar/:external', destinatarioController.modificar);
+
+/*MENSAJE CONTROLLER*/
+router.post('/mensaje/guardar', mensajeController.guardar);
+router.post('/mensaje/guardar_archivo', mensajeController.guardar_archivo);
 
 module.exports = router;

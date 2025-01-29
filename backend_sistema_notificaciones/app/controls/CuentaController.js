@@ -10,6 +10,7 @@ let jwt = require('jsonwebtoken');
 class CuentaController {
 
     async sesion(req, res) {
+        console.log("entro")
         let errors = validationResult(req);
         if (errors.isEmpty()) {
             var login = await cuenta.findOne({
@@ -18,14 +19,14 @@ class CuentaController {
                     {
                         model: usuario,
                         as: 'usuario',
-                        attributes: ['apellidos', 'nombres', 'external_id'],
+                        attributes: ['apellidos', 'nombres','correo', 'external_id'],
                     }
                 ]
             });            
             if (login === null) {
                 res.status(400);
                 res.json({
-                    msg: "CUENTA NO ENCONTRADA",
+                    msg: "USUARIO NO ENCONTRADO",
                     code: 400
                 });
             } else {
@@ -43,7 +44,7 @@ class CuentaController {
                         require('dotenv').config();
                         const llave = process.env.KEY_SQ;
                         const token = jwt.sign(tokenData, llave, {
-                            expiresIn: '12h'
+                            expiresIn: '1h'
                         });
 
                         res.json({
@@ -51,9 +52,11 @@ class CuentaController {
                             user: login.usuario.nombres + ' ' + login.usuario.apellidos,
                             msg: "Bienvenid@ " + login.usuario.nombres + ' ' + login.usuario.apellidos,
                             usuario: login.user,
+                            correo: login.usuario.correo,
                             external_id: login.usuario.external_id,
                             code: 200
                         });
+
                     } else {
                         res.json({
                             msg: "CLAVE INCORRECTA",
@@ -62,12 +65,12 @@ class CuentaController {
                     }
                 } else if (login.estado == false) {
                     res.json({
-                        msg: "CUENTA NO SE ENCUENTRA ACTIVA",
+                        msg: "USUARIO NO SE ENCUENTRA ACTIVO",
                         code: 201
                     });
                 } else {
                     res.json({
-                        msg: "NO EXISTE ESA CUENTA",
+                        msg: "NO EXISTE ESE USUARIO",
                         code: 201
                     });
                 }
