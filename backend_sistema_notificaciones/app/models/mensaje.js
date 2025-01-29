@@ -15,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     mensaje.associate = function (models) {
         mensaje.belongsTo(models.usuario, { foreignKey: 'id_usuario' });
 
-        mensaje.belongsTo(models.destinatario, { foreignKey: 'id_destinatario', as: 'destinatario' });
+        mensaje.belongsTo(models.grupo, { foreignKey: 'id_grupo', as: 'grupo' });
 
         // Cambiar de hasOne a hasMany para permitir múltiples archivos adjuntos
         mensaje.hasMany(models.archivo, {
             foreignKey: 'id_mensaje',
-            as: 'archivos',         // Alias para acceder a los archivos
+            as: 'archivo',         // Alias para acceder a los archivos
             onDelete: 'CASCADE',    // Si se elimina el mensaje, se eliminan los archivos asociados
             onUpdate: 'CASCADE'     // Si se actualiza el mensaje, se actualizan los archivos
         });

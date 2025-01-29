@@ -32,12 +32,12 @@ export default function Principal() {
 
     return (
         <div className="d-flex flex-column min-vh-100 position-relative">
-            <div 
+            <div
                 className="position-fixed top-0 start-0 w-100 h-100"
                 style={{
                     backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
                     backgroundSize: "20%",
-                    backgroundRepeat: "no-repeat", 
+                    backgroundRepeat: "no-repeat",
                     backgroundPosition: "center",
                     filter: "blur(4px)",  // Difuminar solo la imagen de fondo
                     zIndex: "-1"
@@ -58,7 +58,7 @@ export default function Principal() {
                                             <div className="card-body">
                                                 <h5 className="card-title">Grupo: {card.nombre}</h5>
                                                 <p className="card-text">Tipo: {card.tipo}</p>
-                                                <button className="btn btn-light mt-2" onClick={() => alert(`Grupo seleccionado: ${card.nombre}`)} style={{backgroundColor: 'turquoise'}}>
+                                                <button className="btn btn-light mt-2" onClick={() => alert(`Grupo seleccionado: ${card.nombre}`)} style={{ backgroundColor: 'turquoise' }}>
                                                     Ver Detalles
                                                 </button>
                                             </div>
@@ -74,6 +74,21 @@ export default function Principal() {
                     </div>
                 </div>
             </div>
+
+            {/* Botón flotante que se queda fijo en la pantalla */}
+            <a
+                className="btn btn-primary position-fixed bottom-0 end-0 m-4"
+                style={{
+                    width: '110px',   // Tamaño del botón
+                    height: '60px',  // Tamaño del botón
+                    background: 'linear-gradient(140deg,rgb(105, 236, 206), #0077cc)',
+                    zIndex: 10,      // Asegura que el botón esté encima de otros elementos
+    
+                }}
+                href='/grupo'
+            >
+                Crear Grupo
+            </a>
 
             {/* Footer siempre abajo */}
             <Footer className="mt-auto position-relative" style={{ zIndex: "1" }} />

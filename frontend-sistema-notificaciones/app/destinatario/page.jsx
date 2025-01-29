@@ -43,64 +43,70 @@ export default function Page() {
                 }}
             ></div>
             <Menu />
-            <div className="container mt-5">
+            <div className="container mt-1">
                 <div className="d-flex flex-column align-items-center">
                     <h1 style={{ color: '#205375', marginTop: '20px' }}>Destinatarios Registrados</h1>
                     <div className="col-12 mb-4 text-center">
                         <Link href="/destinatario/guardar" className="btn btn-success font-weight-bold" style={{ fontSize: '25px' }}>Registrar</Link>
                     </div>
                     <div className="col-10" style={{ marginLeft: '20px', marginRight: '20px' }}>
-                        <div className="table-responsive">
-                            <table className="table table-bordered" style={{ fontSize: '16px', borderColor: "ActiveBorder", width: '100%' }}>
+                        <div className="table-responsive" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                            <table className="table table-bordered" style={{ fontSize: '15px', borderColor: "ActiveBorder", width: '100%' }}>
                                 <thead className="table-active" style={{ backgroundColor: '#205375', color: 'white', fontSize: '20px' }}>
                                     <tr>
                                         <th style={{ width: '10%' }}>id</th>
                                         <th style={{ width: '20%' }}>Nombres</th>
-                                        <th style={{ width: '20%' }}>Apellidos</th> 
-                                        <th style={{ width: '20%' }}>Correo</th> 
-                                        <th style={{ width: '15%' }}>Grupo</th> 
+                                        <th style={{ width: '20%' }}>Apellidos</th>
+                                        <th style={{ width: '20%' }}>Correo</th>
+                                        <th style={{ width: '15%' }}>Grupo</th>
                                         <th style={{ width: '15%' }}>Administrar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {destinatario.map((dato, index) => (
-                                        <tr key={index}>
-                                            <th scope="row">{index + 1}</th>
-                                            <td style={{ fontSize: '20px' }}>{dato.nombres}</td>
-                                            <td style={{ fontSize: '20px' }}>{dato.apellidos}</td>
-                                            <td style={{ fontSize: '20px' }}>{dato.correo}</td>
-                                            <td style={{ fontSize: '20px' }}>{dato.grupo.nombre}</td>
-                                            <td>
-                                                <Link href={`/destinatario/editar/${dato.id}`} className="btn btn-warning font-weight-bold" style={{ marginRight: '15px', fontSize: '20px' }}>Editar</Link>
-                                                <button
-                                                    className="btn btn-danger font-weight-bold"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#exampleModal"
-                                                    style={{ fontSize: '20px' }}
-                                                >
-                                                    Eliminar
-                                                </button>
-                                                {/* Modal de confirmación */}
-                                                <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div className="modal-dialog">
-                                                        <div className="modal-content">
-                                                            <div className="modal-header">
-                                                                <h5 className="modal-title" id="exampleModalLabel">Confirmación</h5>
-                                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div className="modal-body">
-                                                                ¿Estás seguro de que quieres eliminar este destinatario?
-                                                            </div>
-                                                            <div className="modal-footer">
-                                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleBaja(dato.id)}>Confirmar</button>
+                                    {destinatario.length > 0 ? (
+                                        destinatario.map((dato, index) => (
+                                            <tr key={index}>
+                                                <th scope="row">{index + 1}</th>
+                                                <td style={{ fontSize: '15px' }}>{dato.nombres}</td>
+                                                <td style={{ fontSize: '15px' }}>{dato.apellidos}</td>
+                                                <td style={{ fontSize: '15px' }}>{dato.correo}</td>
+                                                <td style={{ fontSize: '15px' }}>{dato.grupo.nombre}</td>
+                                                <td>
+                                                    <Link href={`/destinatario/editar/${dato.id}`} className="btn btn-warning font-weight-bold" style={{ marginRight: '15px', fontSize: '20px' }}>Editar</Link>
+                                                    <button
+                                                        className="btn btn-danger font-weight-bold"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModal"
+                                                        style={{ fontSize: '20px' }}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                    {/* Modal de confirmación */}
+                                                    <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                        <div className="modal-dialog">
+                                                            <div className="modal-content">
+                                                                <div className="modal-header">
+                                                                    <h5 className="modal-title" id="exampleModalLabel">Confirmación</h5>
+                                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div className="modal-body">
+                                                                    ¿Estás seguro de que quieres eliminar este destinatario?
+                                                                </div>
+                                                                <div className="modal-footer">
+                                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleBaja(dato.id)}>Confirmar</button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="5" className="text-center text-muted">No existen destinatarios aún</td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </table>
                         </div>

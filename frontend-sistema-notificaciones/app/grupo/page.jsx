@@ -76,8 +76,7 @@ export default function Page() {
                     style={{
                         position: "relative",
                         overflow: "hidden" // Evita que la capa de opacidad sobresalga
-                    }}
-                >
+                    }} >
                     <div
                         className="d-flex flex-column"
                         style={{
@@ -103,12 +102,12 @@ export default function Page() {
                             <form className="user" onSubmit={handleSubmit(sendData)}>
                                 <div className="row mb-4">
                                     <div className="col">
-                                        <input {...register('nombre')} type="text" name="nombre" id="nombre" className={`form-control ${errors.nombre ? 'is-invalid' : ''}`} placeholder='Ingrese el nombre del grupo' autoComplete="off" style={{ fontSize: '25px' }}/>
+                                        <input {...register('nombre')} type="text" name="nombre" id="nombre" className={`form-control ${errors.nombre ? 'is-invalid' : ''}`} placeholder='Ingrese el nombre del grupo' autoComplete="off" style={{ fontSize: '15px' }}/>
                                         <label className="form-label" style={{ color: '#1b4f72' }}>Nombre</label>
                                         <div className='alert alert-danger invalid-feedback'>{errors.nombre?.message}</div>
                                     </div>
                                     <div className="col">
-                                        <input {...register('tipo')} type="text" name="tipo" id="tipo" className={`form-control ${errors.tipo ? 'is-invalid' : ''}`} placeholder='Ingrese el tipo de grupo' autoComplete="off" style={{ fontSize: '25px' }}/>
+                                        <input {...register('tipo')} type="text" name="tipo" id="tipo" className={`form-control ${errors.tipo ? 'is-invalid' : ''}`} placeholder='Ingrese el tipo de grupo' autoComplete="off" style={{ fontSize: '15px' }}/>
                                         <label className="form-label" style={{ color: '#1b4f72' }}>Tipo</label>
                                         <div className='alert alert-danger invalid-feedback'>{errors.tipo?.message}</div>
                                     </div>
