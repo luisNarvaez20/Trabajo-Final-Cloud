@@ -4,11 +4,14 @@ import { useForm } from 'react-hook-form';
 import mensajes from "../../componentes/Mensajes";
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { peticionGet, peticionPost } from "../../hooks/Conexion";
+import { peticionGet, peticionPost, peticionPost2 } from "../../hooks/Conexion";
 import { getToken, getExternal } from "../../hooks/SessionUtilClient";
 import Menu from "../../componentes/menu";
 
 export default function Page() {
+  const [files, setFiles] = useState([]);
+  const [totalFileSize, setTotalFileSize] = useState(0);
+  const [uploading, setUploading] = useState(false);
   const external = getExternal();
   const key = getToken();
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -17,8 +20,43 @@ export default function Page() {
   const [groupOptions, setGroupOptions] = useState([]);
   const [recipients, setRecipients] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
-  const [subject, setSubject] = useState('');
-  const [messageType, setMessageType] = useState('');
+
+  const getFileType = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase();
+    const types = {
+      'jpg': 'imagen', 'jpeg': 'imagen', 'png': 'imagen', 'gif': 'imagen',
+      'mp3': 'audio', 'wav': 'audio',
+      'mp4': 'video', 'avi': 'video', 'mov': 'video',
+      'pdf': 'documento', 'doc': 'documento', 'docx': 'documento', 'txt': 'documento'
+    };
+    return types[extension] || 'desconocido';
+  };
+
+  const handleFileChange2 = (event) => {
+    const selectedFiles = Array.from(event.target.files);
+    const newFileList = [...files, ...selectedFiles];
+
+    const totalSize = newFileList.reduce((acc, file) => acc + file.size, 0);
+
+    if (totalSize > 8 * 1024 * 1024) {
+      mensajes("El tamaño total de los archivos no debe superar los 8MB", "Error", "error");
+      return;
+    }
+
+    setFiles(newFileList);
+    setTotalFileSize(totalSize);
+  };
+
+  const removeFile = (index, event) => {
+    event.preventDefault(); 
+
+    const newFileList = files.filter((_, i) => i !== index);
+    const totalSize = newFileList.reduce((acc, file) => acc + file.size, 0);
+
+    setFiles(newFileList);
+    setTotalFileSize(totalSize);
+  };
+
 
   const validationShema = Yup.object().shape({
     asunto: Yup.string().required('Ingrese el asunto del mensaje'),
@@ -35,7 +73,7 @@ export default function Page() {
       mensajes("Debe seleccionar un destinatario", "Error", "error");
       return;
     }
-
+  
     const currentDate = new Date().toISOString();
     const datos = {
       'asunto': data.asunto,
@@ -45,20 +83,49 @@ export default function Page() {
       'id_usuario': external,
       'id_destinatario': selectedRecipient.id,
     };
+  
     peticionPost('mensaje/guardar', datos, key).then((info) => {
       if (info.code !== 200) {
         mensajes("El mensaje no se pudo enviar", "Error", "error");
-      } else {
-        setValue("asunto", "");
-        setValue("contenido", "");
-        setFile(null);
-        setSelectedGroup(null);
-        setSelectedRecipient(null);
-        setShowMessageArea(false);
-        mensajes("Mensaje enviado correctamente", "Información", "success");
+        return;
       }
+  
+      const id_mensaje = info.info; 
+  
+      if (files && files.length > 0) {
+        files.forEach((archivo) => {
+            const formData = new FormData();
+            formData.append('nombre', "dada");
+            formData.append('tipo', "pdf");
+            formData.append('id_mensaje', id_mensaje);
+            formData.append('archivo', archivo);
+            
+            peticionPost2('mensaje/guardar_archivo', formData, key).then((fileInfo) => {
+                if (fileInfo.code !== 200) {
+                    mensajes("El mensaje se envió, pero hubo un error al subir un archivo", "Advertencia", "warning");
+                } else {
+                    mensajes("Archivo subido correctamente", "Información", "success");
+                }
+            });
+        });
+    
+        mensajes("Mensaje enviado correctamente", "Información", "success");
+        limpiarFormulario();
+    } else {
+        mensajes("Mensaje enviado correctamente", "Información", "success");
+        limpiarFormulario();
+    }
     });
   };
+  
+  const limpiarFormulario = () => {
+    setValue("asunto", "");
+    setValue("contenido", "");
+    setFile(null);
+    setSelectedGroup(null);
+    setSelectedRecipient(null);
+    setShowMessageArea(false);
+  };  
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -237,11 +304,43 @@ export default function Page() {
                   )}
 
                   <div className="mb-3">
-                    <label className="form-label">Archivo:</label>
-                    <input type="file" className="form-control" onChange={handleFileChange} />
+                    <label className="form-label">Archivos Adjuntos:</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      multiple
+                      id="archivo"
+                      onChange={handleFileChange2}
+                    />
+                    {files.length > 0 && (
+                      <div className="mt-2">
+                        <h6>Archivos seleccionados:</h6>
+                        <ul className="list-group">
+                          {files.map((file, index) => (
+                            <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                              {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                              <button
+                                type="button" // Evita que actúe como submit
+                                className="btn btn-danger btn-sm"
+                                onClick={(event) => removeFile(index, event)}
+                              >
+                                X
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                        {totalFileSize > 8 * 1024 * 1024 && (
+                          <div className="alert alert-danger mt-2">
+                            El tamaño total de los archivos no debe superar los 8MB.
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  <button type="submit" className="btn btn-primary w-100">Enviar</button>
+                  <button type="submit" className="btn btn-primary w-100" disabled={totalFileSize > 8 * 1024 * 1024 && uploading} >
+                  {uploading ? "Subiendo..." : "Enviar"}
+                  </button>
                 </form>
               </div>
             </div>

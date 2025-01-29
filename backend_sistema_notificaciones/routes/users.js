@@ -87,5 +87,6 @@ router.post('/destinatario/editar/:external', destinatarioController.modificar);
 
 /*MENSAJE CONTROLLER*/
 router.post('/mensaje/guardar', mensajeController.guardar);
+router.post('/mensaje/guardar_archivo', mensajeController.guardar_archivo);
 
 module.exports = router;
