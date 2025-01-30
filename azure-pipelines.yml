@@ -68,8 +68,10 @@ stages:
       inputs:
         script: |
           ls -a
+          cd .\frontend-sistema-notificaciones\ 
+          ls -a
           npm run build
-        workingDirectory: '$(Build.ArtifactStagingDirectory)\frontend-sistema-notificaciones\'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
     
     - task: ArchiveFiles@2
