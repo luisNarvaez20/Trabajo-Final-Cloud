@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form';
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
+import {useRouter} from "next/navigation";
 import { peticionPost, peticionGet } from "../../../hooks/Conexion";
 import { useState, useEffect } from "react";
 import { borrarSesion, getExternal, getToken } from "../../../hooks/SessionUtilClient";
