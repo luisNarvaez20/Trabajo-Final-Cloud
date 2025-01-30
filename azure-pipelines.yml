@@ -5,7 +5,8 @@ trigger:
 
 variables:
   NODE_VERSION: '18.x'  # Versión de Node.js
-  BACKEND_APP_SERVICE: 'tfBackNotif'  # Nombre de tu App Service en Azure
+  BACKEND_APP_SERVICE: 'tfBackNotif'
+  FRONTEND_APP_SERVICE: 'tfFrontNotif'
   AZURE_SUBSCRIPTION: 'Azure for Students(b1a9be0c-3adb-4b54-9b44-14b4d64810e1)'
 
 stages:
@@ -44,7 +45,7 @@ stages:
         artifactName: 'backend'
 
 - stage: BuildFront
-  displayName: 'Build frontend'
+  displayName: 'Build Frontend'
   jobs:
   - job: Build_Frontend
     displayName: 'Instalar dependencias y preparar front'
@@ -60,24 +61,11 @@ stages:
         version: $(NODE_VERSION)
 
     - script: |
-        cd frontend-sistema-notificaciones
+        cd frontend_sistema_notificaciones
+        npm install
         npm run build
-      displayName: 'Instalar dependencias'
-    - task: UseNode@1
-      inputs:
-        version: $(NODE_VERSION)
+      displayName: 'Instalar dependencias y construir frontend'
 
-    - script: |
-        npm run build
-      displayName: 'construir frontend'
-    - task: UseNode@1
-      inputs:
-        version: $(NODE_VERSION)
-
-    - script: |
-        cd frontend-sistema-notificaciones
-        npm run build
-      displayName: 'Construir Frontend'
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: 'frontend_sistema_notificaciones/.next'
@@ -124,7 +112,7 @@ stages:
               StartupCommand: 'npm start'
 
 - stage: DeployFront
-  displayName: 'Deploy frontend to Azure'
+  displayName: 'Deploy Frontend to Azure'
   dependsOn: BuildFront
   condition: succeeded()
   jobs:
@@ -141,7 +129,7 @@ stages:
           steps:
           - task: DownloadBuildArtifacts@0
             inputs:
-              artifactName: 'Frontend'
+              artifactName: 'frontend'
               downloadPath: '$(Build.ArtifactStagingDirectory)'
 
           - task: AzureRmWebAppDeployment@4
@@ -153,4 +141,4 @@ stages:
               WebAppName: 'front-prue'
               packageForLinux: '$(Build.ArtifactStagingDirectory)/frontend/frontend.zip'
               RuntimeStack: 'NODE|18-lts'
-              StartupCommand: 'npm run start'
+              StartupCommand: 'npx next start -p 8080'
