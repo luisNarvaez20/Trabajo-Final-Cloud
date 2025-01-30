@@ -60,32 +60,33 @@ stages:
         version: $(NODE_VERSION)
 
     - script: |
-        cd .\frontend-sistema-notificaciones\ 
+        cd frontend-sistema-notificaciones
         npm install
+      workingDirectory: '$(Build.SourcesDirectory)'
       displayName: 'Instalar dependencias'
-    - task: CmdLine@2
-      displayName: 'construir frontend'
-      inputs:
-        script: |
-          ls -a
-          cd .\frontend-sistema-notificaciones\ 
-          ls -a
-          npm run build
-        workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
-    
+    - script: |
+        cd frontend-sistema-notificaciones
+        dir  # Verificar archivos en Windows (antes era ls)
+        npm run build
+        dir .next  # Verificar si .next se generó correctamente
+      workingDirectory: '$(Build.SourcesDirectory)'
+      displayName: 'Construir frontend'
+
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'frontend_sistema_notificaciones/.next'
+        rootFolderOrFile: '$(Build.SourcesDirectory)/frontend-sistema-notificaciones/.next'
         includeRootFolder: false
         archiveType: zip
         archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
         replaceExistingArchive: true
+      displayName: 'Archivar frontend compilado'
 
     - task: PublishBuildArtifacts@1
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
         artifactName: 'frontend'
+
 
 - stage: DeployBackend
   displayName: 'Deploy Backend to Azure'
