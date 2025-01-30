@@ -61,7 +61,7 @@ stages:
         version: $(NODE_VERSION)
 
     - script: |
-        cd frontend_sistema_notificaciones
+        cd .\frontend-sistema-notificaciones\ 
         npm install
       displayName: 'Instalar dependencias y construir frontend'
     - task: CmdLine@2
