@@ -62,9 +62,16 @@ stages:
     - script: |
         cd frontend-sistema-notificaciones
         npm install
-        npm run build
       displayName: 'Instalar dependencias'
 
+    - task: UseNode@1
+      inputs:
+        version: $(NODE_VERSION)
+
+    - script: |
+        cd frontend-sistema-notificaciones
+        npm run build
+      displayName: 'Construir Frontend'
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: 'frontend_sistema_notificaciones/.next'
