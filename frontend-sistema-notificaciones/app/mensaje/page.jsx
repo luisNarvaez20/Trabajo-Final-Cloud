@@ -8,6 +8,7 @@ import { peticionGet, peticionPost, peticionPost2 } from "../../hooks/Conexion";
 import { getToken, getExternal } from "../../hooks/SessionUtilClient";
 import Menu from "../../componentes/menu";
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function Page() {
   const [files, setFiles] = useState([]);

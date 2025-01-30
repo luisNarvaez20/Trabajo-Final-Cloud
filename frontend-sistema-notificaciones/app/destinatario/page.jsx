@@ -5,6 +5,7 @@ import Footer from "../../componentes/footer";
 import mensajes from "../../componentes/Mensajes";
 import { useRouter } from 'next/navigation';
 import { peticionPost, peticionGet } from "../../hooks/Conexion";
+import Cookies from 'js-cookie';
 import { useState, useEffect } from "react";
 import { borrarSesion, getExternal, getToken } from "../../hooks/SessionUtilClient";
 
