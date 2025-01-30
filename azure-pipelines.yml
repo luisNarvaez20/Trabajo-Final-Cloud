@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  name: 'pool1'
+
+steps:
+- task: UseNode@2
+  inputs:
+    versionSpec: '18.x'
+    addToPath: true
+
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: Npm@1
+  inputs:
+    command: 'run build'
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Azure for Students(af4c3a90-6ae3-45fb-a39a-e727038433fc)'
+    appType: 'webAppLinux'
+    appName: 'frontend-noti'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    runtimeStack: 'NODE|18-lts'
+    startUpCommand: 'nrm run dev'
