@@ -61,7 +61,7 @@ stages:
 
     - script: |
         cd frontend-sistema-notificaciones
-        npm install
+        npm run build
       displayName: 'Instalar dependencias'
 
     - task: UseNode@1
