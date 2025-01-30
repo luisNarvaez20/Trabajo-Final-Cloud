@@ -64,10 +64,7 @@ stages:
         npm install
       displayName: 'Instalar dependencias y construir frontend'
 
-    - task: PowerShell@2
-      inputs:
-        filePath: '$(Build.ArtifactStagingDirectory)/'
-        arguments: 'cd .\frontend-sistema-notificaciones\; npm run build'
+
     
     - task: ArchiveFiles@2
       inputs:
