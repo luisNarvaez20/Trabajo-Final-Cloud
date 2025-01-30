@@ -66,8 +66,8 @@ stages:
 
     - task: PowerShell@2
       inputs:
-        filePath: '$(Build.ArtifactStagingDirectory)/frontend-sistema-notificaciones'
-        arguments: 'npm run build'
+        filePath: '$(Build.ArtifactStagingDirectory)/'
+        arguments: 'cd .\frontend-sistema-notificaciones\; npm run build'
     
     - task: ArchiveFiles@2
       inputs:
