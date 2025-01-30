@@ -15,7 +15,7 @@ stages:
   - job: Build_Backend
     displayName: 'Instalar dependencias y preparar backend'
     pool:
-      vmImage: 'ubuntu-latest'
+      name: 'pool1'
     steps:
     - checkout: self
 
