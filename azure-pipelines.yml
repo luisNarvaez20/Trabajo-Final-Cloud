@@ -15,7 +15,9 @@ stages:
   - job: Build_Backend
     displayName: 'Instalar dependencias y preparar backend'
     pool:
-      name: 'pool1'
+      name: Default
+      demands:
+      - agent.name -equals pool1
     steps:
     - checkout: self
 
