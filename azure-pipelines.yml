@@ -28,7 +28,7 @@ stages:
 
     - script: |
         cd backend_sistema_notificaciones
-        npm install ; npm run build
+        npm install
       displayName: 'Instalar dependencias'
 
     - task: ArchiveFiles@2
@@ -62,8 +62,7 @@ stages:
 
     - script: |
         cd .\frontend-sistema-notificaciones\ 
-        npm install
-        npm run build
+        npm install ; npm run build
       displayName: 'Instalar dependencias y construir frontend'
     - task: ArchiveFiles@2
       inputs:
