@@ -52,7 +52,9 @@ stages:
     displayName: 'Desplegar Backend en Azure App Service'
     environment: 'production'
     pool:
-      vmImage: 'ubuntu-latest'
+      name: Default
+      demands:
+      - agent.name -equals pool1
     strategy:
       runOnce:
         deploy:
