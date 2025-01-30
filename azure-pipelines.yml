@@ -1,30 +1,72 @@
 trigger:
-- main
+  branches:
+    include:
+      - main  # Ejecutar cuando haya cambios en main
 
-pool:
-  name: 'pool1'
+variables:
+  NODE_VERSION: '18.x'  # Versión de Node.js
+  BACKEND_APP_SERVICE: 'tfBackNotif'  # Nombre de tu App Service en Azure
+  AZURE_SUBSCRIPTION: 'Azure for Students(b1a9be0c-3adb-4b54-9b44-14b4d64810e1)'
 
-steps:
-- task: UseNode@2
-  inputs:
-    versionSpec: '18.x'
-    addToPath: true
+stages:
+- stage: Build
+  displayName: 'Build Backend'
+  jobs:
+  - job: Build_Backend
+    displayName: 'Instalar dependencias y preparar backend'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
 
-- task: Npm@1
-  inputs:
-    command: 'install'
-    workingDirectory: '$(Build.SourcesDirectory)'
+    - task: UseNode@1
+      inputs:
+        version: $(NODE_VERSION)
 
-- task: Npm@1
-  inputs:
-    command: 'run build'
-    workingDirectory: '$(Build.SourcesDirectory)'
+    - script: |
+        cd backend_sistema_notificaciones
+        npm install
+      displayName: 'Instalar dependencias'
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'Azure for Students(af4c3a90-6ae3-45fb-a39a-e727038433fc)'
-    appType: 'webAppLinux'
-    appName: 'frontend-noti'
-    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    runtimeStack: 'NODE|18-lts'
-    startUpCommand: 'nrm run dev'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'backend_sistema_notificaciones'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)/backend.zip'
+        artifactName: 'backend'
+
+- stage: Deploy
+  displayName: 'Deploy Backend to Azure'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy_Backend
+    displayName: 'Desplegar Backend en Azure App Service'
+    environment: 'production'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: 'backend'
+              downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy Backend'
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure for Students(b1a9be0c-3adb-4b54-9b44-14b4d64810e1)'
+              appType: 'webAppLinux'
+              WebAppName: 'tfBackNotif'
+              packageForLinux: '$(Build.ArtifactStagingDirectory)/backend.zip'
+              RuntimeStack: 'NODE|18-lts'
+              StartupCommand: 'npm start'
