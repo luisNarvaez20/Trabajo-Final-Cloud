@@ -168,6 +168,15 @@ class MensajeControl {
                     code: 404
                 });
             }
+
+            var user = await usuario.findOne({ where: { external_id: req.body.external } });
+            if (!grupoId) {
+                return res.status(404).json({
+                    msg: "ERROR",
+                    tag: "Usuario no encontrado",
+                    code: 404
+                });
+            }
             console.log("2. grupo encontrado");
 
             //guardar datos en mensaje
@@ -176,6 +185,7 @@ class MensajeControl {
                 contenido: req.body.contenido,
                 tipo: 'correo',
                 fecha: new Date(),
+                id_usuario: user.id,
                 id_grupo: grupoId.id,
             };
             console.log("3. data guardada");
