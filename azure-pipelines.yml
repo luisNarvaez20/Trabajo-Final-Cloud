@@ -9,7 +9,7 @@ variables:
   AZURE_SUBSCRIPTION: 'Azure for Students(b1a9be0c-3adb-4b54-9b44-14b4d64810e1)'
 
 stages:
-- stage: Build
+- stage: BuildBack
   displayName: 'Build Backend'
   jobs:
   - job: Build_Backend
@@ -60,7 +60,7 @@ stages:
         version: $(NODE_VERSION)
 
     - script: |
-        cd frontend_sistema_notificaciones
+        cd frontend-sistema-notificaciones
         npm install
         npm run build
       displayName: 'Instalar dependencias'
@@ -80,7 +80,7 @@ stages:
 
 - stage: DeployBackend
   displayName: 'Deploy Backend to Azure'
-  dependsOn: Build
+  dependsOn: BuildBack
   condition: succeeded()
   jobs:
   - deployment: Deploy_Backend
@@ -112,7 +112,7 @@ stages:
 
 - stage: DeployFront
   displayName: 'Deploy frontend to Azure'
-  dependsOn: Build
+  dependsOn: BuildFront
   condition: succeeded()
   jobs:
   - deployment: Deploy_Frontend
@@ -140,4 +140,4 @@ stages:
               WebAppName: 'frontend-noti'
               packageForLinux: '$(Build.ArtifactStagingDirectory)/frontend/frontend.zip'
               RuntimeStack: 'NODE|18-lts'
-              StartupCommand: 'npm start'
+              StartupCommand: 'npm run start'
