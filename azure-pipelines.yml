@@ -28,7 +28,7 @@ stages:
 
     - script: |
         cd backend_sistema_notificaciones
-        npm install
+        npm install ; npm run build
       displayName: 'Instalar dependencias'
 
     - task: ArchiveFiles@2
