@@ -10,7 +10,7 @@ variables:
 
 stages:
 - stage: Build
-  displayName: 'Build Backend and Frontend'
+  displayName: 'Build Backend'
   jobs:
   - job: Build_Backend
     displayName: 'Instalar dependencias y preparar backend'
@@ -42,8 +42,12 @@ stages:
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)/backend.zip'
         artifactName: 'backend'
-  - job: build_Frontend
-    displayName: 'Build Frontend'
+
+- stage: BuildFront
+  displayName: 'Build frontend'
+  jobs:
+  - job: Build_Frontend
+    displayName: 'Instalar dependencias y preparar front'
     pool:
       name: Default
       demands:
@@ -59,11 +63,11 @@ stages:
         cd frontend_sistema_notificaciones
         npm install
         npm run build
-      displayName: 'Instalar dependencias y construir frontend'
+      displayName: 'Instalar dependencias'
 
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: 'frontend_sistema_notificaciones/build'
+        rootFolderOrFile: 'frontend_sistema_notificaciones/.next'
         includeRootFolder: false
         archiveType: zip
         archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
@@ -73,13 +77,14 @@ stages:
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
         artifactName: 'frontend'
-- stage: Deploy
+
+- stage: DeployBackend
   displayName: 'Deploy Backend to Azure'
   dependsOn: Build
   condition: succeeded()
   jobs:
   - deployment: Deploy_Backend
-    displayName: 'Desplegar Backend y Frontend en Azure App Service'
+    displayName: 'Desplegar Backend en Azure App Service'
     environment: 'production'
     pool:
       name: Default
@@ -93,10 +98,7 @@ stages:
             inputs:
               artifactName: 'backend'
               downloadPath: '$(Build.ArtifactStagingDirectory)'
-          - task: DownloadBuildArtifacts@0
-            inputs:
-              artifactName: 'frontend'
-              downloadPath: '$(Build.ArtifactStagingDirectory)'
+
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy Backend'
             inputs:
@@ -107,6 +109,28 @@ stages:
               packageForLinux: '$(Build.ArtifactStagingDirectory)/backend/backend.zip'
               RuntimeStack: 'NODE|18-lts'
               StartupCommand: 'npm start'
+
+- stage: DeployFront
+  displayName: 'Deploy frontend to Azure'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy_Frontend
+    displayName: 'Desplegar Frontend en Azure App Service'
+    environment: 'production'
+    pool:
+      name: Default
+      demands:
+      - agent.name -equals pool1
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: 'Frontend'
+              downloadPath: '$(Build.ArtifactStagingDirectory)'
+
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy Frontend'
             inputs:
