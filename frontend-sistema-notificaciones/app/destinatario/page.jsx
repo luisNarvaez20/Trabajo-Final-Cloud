@@ -60,12 +60,12 @@ export default function Page() {
                             <table className="table table-bordered" style={{ fontSize: '15px', borderColor: "ActiveBorder", width: '100%' }}>
                                 <thead className="table-active" style={{ backgroundColor: '#205375', color: 'white', fontSize: '20px' }}>
                                     <tr>
-                                        <th style={{ width: '10%' }}>id</th>
-                                        <th style={{ width: '20%' }}>Nombres</th>
-                                        <th style={{ width: '20%' }}>Apellidos</th>
-                                        <th style={{ width: '20%' }}>Correo</th>
-                                        <th style={{ width: '15%' }}>Grupo</th>
-                                        <th style={{ width: '15%' }}>Administrar</th>
+                                        <th>id</th>
+                                        <th>Nombres</th>
+                                        <th>Apellidos</th>
+                                        <th>Correo</th>
+                                        <th>Grupo</th>
+                                        <th>Administrar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,10 +73,10 @@ export default function Page() {
                                         destinatario.map((dato, index) => (
                                             <tr key={index}>
                                                 <th scope="row">{index + 1}</th>
-                                                <td style={{ fontSize: '15px' }}>{dato.nombres}</td>
-                                                <td style={{ fontSize: '15px' }}>{dato.apellidos}</td>
-                                                <td style={{ fontSize: '15px' }}>{dato.correo}</td>
-                                                <td style={{ fontSize: '15px' }}>{dato.grupo.nombre}</td>
+                                                <td>{dato.nombres}</td>
+                                                <td>{dato.apellidos}</td>
+                                                <td>{dato.correo}</td>
+                                                <td>{dato.grupo.nombre}</td>
                                                 <td>
                                                     <Link href={`/destinatario/editar/${dato.id}`} className="btn btn-warning font-weight-bold" style={{ marginRight: '15px', fontSize: '20px' }}>Editar</Link>
                                                     <button
