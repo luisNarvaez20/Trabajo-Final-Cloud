@@ -61,13 +61,15 @@ stages:
         version: $(NODE_VERSION)
 
     - script: |
-        ls -la
         cd frontend_sistema_notificaciones
-        ls -la
         npm install
-        npm run build
       displayName: 'Instalar dependencias y construir frontend'
-
+    - task: CmdLine@2
+      inputs:
+        script: |
+          cd .\frontend-sistema-notificaciones\ 
+          npm run build
+        workingDirectory: '$(Build.ArtifactStagingDirectory)'
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: 'frontend_sistema_notificaciones/.next'
