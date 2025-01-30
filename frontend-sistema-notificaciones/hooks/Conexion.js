@@ -1,4 +1,4 @@
-let URL = 'http://localhost:8000/api/';
+let URL = node.env.REACT_APP_API_URL;
 
 
 //METODO GENERAL PARA PETICIONES POST
