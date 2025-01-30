@@ -107,3 +107,13 @@ stages:
               packageForLinux: '$(Build.ArtifactStagingDirectory)/backend/backend.zip'
               RuntimeStack: 'NODE|18-lts'
               StartupCommand: 'npm start'
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy Frontend'
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Azure for Students(af4c3a90-6ae3-45fb-a39a-e727038433fc)'
+              appType: 'webAppLinux'
+              WebAppName: 'frontend-noti'
+              packageForLinux: '$(Build.ArtifactStagingDirectory)/frontend/frontend.zip'
+              RuntimeStack: 'NODE|18-lts'
+              StartupCommand: 'npm start'
