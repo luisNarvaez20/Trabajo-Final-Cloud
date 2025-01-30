@@ -78,8 +78,8 @@ router.get('/destinatario/listar_grupo/:external', auth, destinatarioController.
 router.post('/destinatario/editar/:external', auth, destinatarioController.modificar);
 
 /*MENSAJE CONTROLLER*/
-router.post('/mensaje/guardar', mensajeController.guardar);
-router.post('/mensaje/guardar_archivo', mensajeController.guardar_archivo);
-router.post('/mensaje/enviar', mensajeController.enviarMensajeLogicApps);
+router.post('/mensaje/guardar', auth, mensajeController.guardar);
+router.post('/mensaje/guardar_archivo', auth, mensajeController.guardar_archivo);
+router.post('/mensaje/enviar', auth, mensajeController.enviarMensajeLogicApps);
 
 module.exports = router;

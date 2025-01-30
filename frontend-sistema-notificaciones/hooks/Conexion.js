@@ -18,11 +18,15 @@ export async function peticionPost(recurso, data, key = "") {
         };
     }
 
+    console.log("asdfkjahfjahfjkafaka", data)
+
     const response = await (fetch(URL + recurso, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(data)
     }));
+
+    console.log(response);
 
     return  response.json();
 }

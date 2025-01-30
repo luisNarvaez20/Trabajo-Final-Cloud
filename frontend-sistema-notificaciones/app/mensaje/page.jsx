@@ -7,7 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { peticionGet, peticionPost, peticionPost2 } from "../../hooks/Conexion";
 import { getToken, getExternal } from "../../hooks/SessionUtilClient";
 import Menu from "../../componentes/menu";
-import imageCompression from 'browser-image-compression';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function Page() {
   const [files, setFiles] = useState([]);
@@ -17,21 +18,8 @@ export default function Page() {
   const key = getToken();
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [showMessageArea, setShowMessageArea] = useState(false);
-  const [file, setFile] = useState(null);
   const [groupOptions, setGroupOptions] = useState([]);
-  const [recipients, setRecipients] = useState([]);
-  const [selectedRecipient, setSelectedRecipient] = useState(null);
-
-  const getFileType = (fileName) => {
-    const extension = fileName.split('.').pop().toLowerCase();
-    const types = {
-      'jpg': 'imagen', 'jpeg': 'imagen', 'png': 'imagen', 'gif': 'imagen',
-      'mp3': 'audio', 'wav': 'audio',
-      'mp4': 'video', 'avi': 'video', 'mov': 'video',
-      'pdf': 'documento', 'doc': 'documento', 'docx': 'documento', 'txt': 'documento'
-    };
-    return types[extension] || 'desconocido';
-  };
+  const router = useRouter();
 
   const handleFileChange2 = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -82,26 +70,9 @@ export default function Page() {
     });
   };
   
-  const compressFile = async (file) => {
-    const options = {
-      maxSizeMB: 5,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true
-    };
-    try {
-      const compressedFile = await imageCompression(file, options);
-      return compressedFile;
-    } catch (error) {
-      console.error(error);
-      return file;
-    }
-  };
 
   const sendData = async (data) => {
-    if (!selectedRecipient) {
-      mensajes("Debe seleccionar un destinatario", "Error", "error");
-      return;
-    }
+    
     const archivosConvertidos = await Promise.all(
       files.map(async (archivo) => {
         //const archivoComprimido = await compressFile(archivo);
@@ -116,27 +87,21 @@ export default function Page() {
       'asunto': data.asunto,
       'contenido': data.contenido,
       'grupo': data.external_id || selectedGroup.external_id,
-      'archivos': archivosConvertidos
+      'archivos': archivosConvertidos,
+      'external': external
     };
 
     peticionPost('mensaje/enviar', datos, key).then((info) => {
       if (info.code !== 200) {
-        mensajes("El mensaje no se pudo enviar", "Error", "error");
+        mensajes("El mensaje no se pudo enviar", "Error", info.msg || info.error || info.data);
         return;
       }
 
       mensajes("El mensaje se envió correctamente", "Éxito", "success");
+      router.push("/principal");
     });
 };
   
-  const limpiarFormulario = () => {
-    setValue("asunto", "");
-    setValue("contenido", "");
-    setFile(null);
-    setSelectedGroup(null);
-    setSelectedRecipient(null);
-    setShowMessageArea(false);
-  };  
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -158,36 +123,13 @@ export default function Page() {
   const handleGroupChange = async (group) => {
     if (selectedGroup === group) {
       setSelectedGroup(null);
-      setRecipients([]);
       setSelectedRecipient(null);
       setShowMessageArea(false);
     } else {
       setSelectedGroup(group);
-      setRecipients([]);
-      setSelectedRecipient(null);
-      setShowMessageArea(false);
+      setShowMessageArea(true);
 
-      try {
-        const external = group.external_id;
-        const response = await peticionGet("destinatario/listar_grupo/" + external, key);
-        if (response.code === 200) {
-          setRecipients(response.datos);
-        } else {
-          console.error("Error al obtener los destinatarios:", response);
-        }
-      } catch (error) {
-        console.error("Error al llamar a peticionGet para destinatarios:", error);
-      }
     }
-  };
-
-  const handleRecipientSelect = (recipient) => {
-    setSelectedRecipient(recipient);
-    setShowMessageArea(true);
-  };
-
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
   };
 
   return (
@@ -252,51 +194,11 @@ export default function Page() {
           </div>
         </div>
 
-        {recipients.length > 0 && (
-          <div className="d-flex justify-content-center mb-4">
-            <div className="card w-75">
-              <div className="card-body">
-              <label className="form-label" style={{ color: '#1b4f72' }}>Miembros Asociados</label>
-                <div className="table-responsive">
-                  <table className="table table-bordered">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Nombres</th>
-                        <th>Apellidos</th>
-                        <th>Correo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recipients.map((recipient, index) => (
-                        <tr key={index}>
-                          <td>
-                            <input
-                              type="radio"
-                              name="recipient"
-                              value={recipient.external_id}
-                              checked={selectedRecipient === recipient}
-                              onChange={() => handleRecipientSelect(recipient)}
-                            />
-                            {"  "}
-                            {recipient.nombres}
-                          </td>
-                          <td>{recipient.apellidos}</td>
-                          <td>{recipient.correo}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {showMessageArea && (
           <div className="d-flex justify-content-center">
             <div className="card w-75">
               <div className="card-body">
-                <p>Destinatario: {selectedRecipient ? `${selectedRecipient.nombres} ${selectedRecipient.apellidos}` : "Ningún destinatario seleccionado"}</p>
+                <p>Destinatarios del grupo: {selectedGroup ? `${selectedGroup.nombre}` : "Ningún destinatario seleccionado"}</p>
 
                 <div className="mb-3">
                   <label className="form-label">Asunto:</label>

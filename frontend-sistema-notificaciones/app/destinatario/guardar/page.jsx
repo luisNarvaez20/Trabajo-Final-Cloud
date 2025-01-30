@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { borrarSesion, getExternal, getToken } from "../../../hooks/SessionUtilClient";
 import Footer from "../../../componentes/footer";
 import Menu from "../../../componentes/menu";
+import Cookies from 'js-cookie';
 
 export default function Page() {
   const router = useRouter();
