@@ -1,4 +1,4 @@
-let URL = node.env.REACT_APP_API_URL;
+let URL = process.env.REACT_APP_API_URL;
 
 
 //METODO GENERAL PARA PETICIONES POST
