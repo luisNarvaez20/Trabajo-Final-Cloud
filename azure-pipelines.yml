@@ -68,9 +68,9 @@ stages:
             displayName: 'Deploy Backend'
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'Azure for Students(b1a9be0c-3adb-4b54-9b44-14b4d64810e1)'
+              azureSubscription: 'Azure for Students(af4c3a90-6ae3-45fb-a39a-e727038433fc)'
               appType: 'webAppLinux'
-              WebAppName: 'tfnotif-back'
+              WebAppName: 'backend-noti'
               packageForLinux: '$(Build.ArtifactStagingDirectory)/backend/backend.zip'
               RuntimeStack: 'NODE|18-lts'
               StartupCommand: 'npm start'
