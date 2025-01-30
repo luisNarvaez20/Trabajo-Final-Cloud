@@ -61,8 +61,6 @@ stages:
 
     - script: |
         cd frontend-sistema-notificaciones
-        export NEXTJS_IGNORE_ESLINT=1
-        export NEXTJS_IGNORE_BUILD_ERRORS=1
         npm run build
       displayName: 'Instalar dependencias'
 
