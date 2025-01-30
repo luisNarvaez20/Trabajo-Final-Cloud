@@ -71,6 +71,6 @@ stages:
               azureSubscription: 'Azure for Students(b1a9be0c-3adb-4b54-9b44-14b4d64810e1)'
               appType: 'webAppLinux'
               WebAppName: 'tfnotif-back'
-              packageForLinux: '$(Build.ArtifactStagingDirectory)/backend.zip'
+              packageForLinux: '$(Build.ArtifactStagingDirectory)/backend/backend.zip'
               RuntimeStack: 'NODE|18-lts'
               StartupCommand: 'npm start'
