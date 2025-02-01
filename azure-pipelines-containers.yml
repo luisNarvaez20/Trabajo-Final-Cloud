@@ -1,12 +1,16 @@
 trigger:
 - main
 
+pr:
+  branches:
+    include:
+      - main
 pool:
-  name: pool1
+  name: default
+  demands:
+  - agent.name -equals pool1
 
 stages:
-
-
   - stage: Deploy_Backend
     displayName: "construir y desplegar backend en Container Registry"
     jobs:
