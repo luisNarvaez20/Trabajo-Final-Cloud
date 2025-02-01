@@ -1,0 +1,92 @@
+trigger:
+  - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  name: pool1
+
+stages:
+
+  - stage: Deploy_Backend
+    displayName: "Desplegar Backend"
+    jobs:
+      - job: Deploy_Backend
+        steps:
+          - task: UseNode@1
+            inputs:
+              version: "20.x"  # Usa Node.js 20
+
+          - script: |
+              cd backend_sistema_notificaciones
+              npm install
+            displayName: "Instalar dependencias del Backend"
+
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: "$(Build.SourcesDirectory)/backend_sistema_notificaciones"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/backend.zip"
+              replaceExistingArchive: true
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: "$(Build.ArtifactStagingDirectory)"
+              artifactName: "drop-backend"
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'Azure for Students(af4c3a90-6ae3-45fb-a39a-e727038433fc)'
+              appType: 'webAppLinux'
+              appName: 'backend-sexto'
+              package: "$(Build.ArtifactStagingDirectory)/backend.zip"
+              runtimeStack: 'NODE|20-lts'  # Usa Node.js 20
+              startUpCommand: 'npm start'
+
+
+  - stage: Deploy_Frontend
+    displayName: "Desplegar Frontend"
+    jobs:
+      - job: Deploy_Frontend
+        steps:
+          - task: UseNode@1
+            inputs:
+              version: "20.x"
+
+          - script: |
+              cd frontend-sistema-notificaciones
+              npm install
+            displayName: "Instalar dependencias"
+
+          - script: |
+              cd frontend-sistema-notificaciones
+              npm run build
+            displayName: "compilar Frontend"
+
+
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: "$(Build.SourcesDirectory)/frontend-sistema-notificaciones"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/frontend.zip"
+              replaceExistingArchive: true
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: "$(Build.ArtifactStagingDirectory)"
+              artifactName: "drop-frontend"
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'Azure for Students(af4c3a90-6ae3-45fb-a39a-e727038433fc)'
+              appType: 'webAppLinux'
+              appName: 'frontend-sexto'
+              package: "$(Build.ArtifactStagingDirectory)/frontend.zip"
+              runtimeStack: 'NODE|20-lts'
+              startUpCommand: 'npm run dev'
+
