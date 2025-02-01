@@ -1,0 +1,45 @@
+trigger:
+- main
+
+pool:
+  name: pool1
+
+stages:
+
+
+  - stage: Deploy_Backend
+    displayName: "construir y desplegar backend en Container Registry"
+    jobs:
+      - job: Build_Backend_COntainer
+        steps:
+        - task: UseNode@1
+          inputs:
+            version: '20.x'
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
+            scriptType: 'ps'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'az acr login --name $(env:CONTAINER_REGISTRY_URL)'
+        - task: CmdLine@2
+          inputs:
+            script: |
+              cd backend_sistema_notificaciones
+              docker build -t $(env:CONTAINER_REGISTRY_URL)/backend-notificaciones:$(env:BACKEND_TAG) \
+                    --build-arg DB_USERNAME=$(env:DB_USERNAME) \
+                    --build-arg DB_PASSWORD=$(env:DB_PASSWORD) \
+                    --build-arg DB_DATABASE=$(env:DB_DATABASE) \
+                    --build-arg DB_HOST=$(env:DB_HOST) \
+                    --build-arg DB_PORT=$(env:DB_PORT) \
+                    --build-arg DB_DIALECT=$(env:DB_DIALECT) \
+                    --build-arg DB_OPERATOR_ALIASES=$(env:DB_OPERATOR_ALIASES) \
+                    --build-arg NODE_ENV=$(env:NODE_ENV) \
+                    --build-arg KEY_SQ=$(env:KEY_SQ) \
+                    --build-arg LOGIC_APPS_URL=$(env:LOGIC_APPS_URL) \
+                    .
+          displayName: "construir imagen del backend"
+        
+        - task: CmdLine@2
+          inputs:
+            script: 'docker push$(env:CONTAINER_REGISTRY_URL)/backend-notificaciones:$(env:BACKEND_TAG)'
+          displayName: "Registrar Backend a Container Registry"
