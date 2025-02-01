@@ -1,5 +1,9 @@
-let URL = process.env.REACT_APP_API_URL;
+require('dotenv');
+let URL = process.env.NEXT_PUBLIC_API_URL;
 
+if (!URL) {
+    throw new Error("NEXT_PUBLIC_API_URL no está definida en las variables de entorno");
+}
 
 //METODO GENERAL PARA PETICIONES POST
 export async function peticionPost(recurso, data, key = "") {
@@ -18,17 +22,14 @@ export async function peticionPost(recurso, data, key = "") {
         };
     }
 
-    console.log("asdfkjahfjahfjkafaka", data)
-
-    const response = await (fetch(URL + recurso, {
-        method: "POST",
+    const response = await fetch(`${URL}/${recurso}`, {
+        method: 'POST',
         headers: headers,
         body: JSON.stringify(data)
-    }));
+    });
 
-    console.log(response);
-
-    return  response.json();
+    const result = await response.json();
+    return result;
 }
 
 export async function peticionPost2(recurso, data, key = "") {
