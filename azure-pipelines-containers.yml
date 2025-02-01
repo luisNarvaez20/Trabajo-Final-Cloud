@@ -24,7 +24,7 @@ stages:
             azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
             scriptType: 'ps'
             scriptLocation: 'inlineScript'
-            inlineScript: 'az acr login --name $(env:CONTAINER_REGISTRY_URL)'
+            inlineScript: 'az acr login --name $(CONTAINER_REGISTRY_URL)'
         - task: CmdLine@2
           inputs:
             script: |
