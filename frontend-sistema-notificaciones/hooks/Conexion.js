@@ -1,4 +1,4 @@
-let URL = process.env.REACT_APP_API_URL;
+let URL = process.env.NEXT_PUBLIC_API_URL;
 
 
 //METODO GENERAL PARA PETICIONES POST
@@ -18,7 +18,7 @@ export async function peticionPost(recurso, data, key = "") {
         };
     }
 
-    console.log("asdfkjahfjahfjkafaka", data)
+    console.log(URL)
 
     const response = await (fetch(URL + recurso, {
         method: "POST",
