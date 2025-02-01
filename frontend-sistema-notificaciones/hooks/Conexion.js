@@ -1,8 +1,8 @@
 require('dotenv');
-let URL = "https://frontend-sexto-dcdhggdzgqffc8en.eastus2-01.azurewebsites.net" ;
+let URL = process.env.NEXT_PUBLIC_API_URL;
 
 if (!URL) {
-    throw new Error("REACT_APP_API_URL no está definida en las variables de entorno");
+    throw new Error("NEXT_PUBLIC_API_URL no está definida en las variables de entorno");
 }
 
 //METODO GENERAL PARA PETICIONES POST
