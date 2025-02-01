@@ -28,10 +28,13 @@ stages:
         - task: CmdLine@2
           inputs:
             script: |
+              dir
               cd backend_sistema_notificaciones
-              docker build -t $(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG) --build-arg DB_USERNAME=$(DB_USERNAME) --build-arg DB_PASSWORD=$(DB_PASSWORD) --build-arg DB_DATABASE=$(DB_DATABASE) --build-arg DB_HOST=$(DB_HOST) build-arg DB_PORT=$(DB_PORT) --build-arg DB_DIALECT=$(DB_DIALECT) --build-arg DB_OPERATOR_ALIASES=$(DB_OPERATOR_ALIASES) --build-arg NODE_ENV=$(NODE_ENV) --build-arg KEY_SQ=$(KEY_SQ) --build-arg LOGIC_APPS_URL=$(LOGIC_APPS_URL) .
+              dir
+              docker build -t $(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG) --build-arg DB_USERNAME="$(DB_USERNAME)" --build-arg DB_PASSWORD="$(DB_PASSWORD)" --build-arg DB_DATABASE="$(DB_DATABASE)" --build-arg DB_HOST="$(DB_HOST)" --build-arg DB_PORT="$(DB_PORT)" --build-arg DB_DIALECT="$(DB_DIALECT)" --build-arg DB_OPERATOR_ALIASES="$(DB_OPERATOR_ALIASES)" --build-arg NODE_ENV="$(NODE_ENV)" --build-arg KEY_SQ="$(KEY_SQ)" --build-arg LOGIC_APPS_URL="$(LOGIC_APPS_URL)" .
           displayName: "construir imagen del backend"
-        
+
+
         - task: CmdLine@2
           inputs:
             script: 'docker push $(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG)'
