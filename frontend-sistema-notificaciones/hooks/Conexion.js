@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 require('dotenv');
 let URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -22,6 +23,7 @@ export async function peticionPost(recurso, data, key = "") {
         };
     }
 
+<<<<<<< HEAD
     const response = await fetch(`${URL}/${recurso}`, {
         method: 'POST',
         headers: headers,
