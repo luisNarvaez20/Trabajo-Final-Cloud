@@ -106,7 +106,7 @@ export default function Page() {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await peticionGet("/grupo/listar", key);
+        const response = await peticionGet("/grupo/listar/"+external, key);
         if (response && response.info) {
           setGroupOptions(response.info);
         } else {
