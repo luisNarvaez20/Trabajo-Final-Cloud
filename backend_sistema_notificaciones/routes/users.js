@@ -17,6 +17,8 @@ const MensajeController = require('../app/controls/MensajeController');
 var mensajeController = new MensajeController();
 const RecibMensajesController = require('../app/controls/RecibMensajesController');
 var recibmensajeController = new RecibMensajesController();
+const RecordatorioController = require('../app/controls/RecordatorioController');
+var recordatorioController = new RecordatorioController();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -86,4 +88,10 @@ router.post('/mensaje/enviar', auth, mensajeController.enviarMensajeLogicApps);
 router.get('/mensaje/listar', auth, mensajeController.listarMensaje);
 router.get('/recibirmensajes', recibmensajeController.recibirMensajes);
 router.get('/recibirtoken', recibmensajeController.obtenerToken);
+router.get('/mensaje/listar/:external', auth, mensajeController.obtener);
+
+/*RECORDATORIO CONTROLLER*/
+router.get('/recordatorio/listar/:external', auth, recordatorioController.listar);
+router.post('/recordatorio/registrar', auth, recordatorioController.guardar);
+
 module.exports = router;
