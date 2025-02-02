@@ -28,8 +28,23 @@ stages:
         - task: CmdLine@2
           inputs:
             script: |
+              echo "DB_USERNAME=$(DB_USERNAME)" > backend_sistema_notificaciones/.env
+              echo "DB_PASSWORD=$(DB_PASSWORD)" >> backend_sistema_notificaciones/.env
+              echo "DB_DATABASE=$(DB_DATABASE)" >> backend_sistema_notificaciones/.env
+              echo "DB_HOST=$(DB_HOST)" >> backend_sistema_notificaciones/.env
+              echo "DB_PORT=$(DB_PORT)" >> backend_sistema_notificaciones/.env
+              echo "DB_DIALECT=$(DB_DIALECT)" >> backend_sistema_notificaciones/.env
+              echo "DB_OPERATOR_ALIASES=$(DB_OPERATOR_ALIASES)" >> backend_sistema_notificaciones/.env
+              echo "NODE_ENV=$(NODE_ENV)" >> backend_sistema_notificaciones/.env
+              echo "KEY_SQ=$(KEY_SQ)" >> backend_sistema_notificaciones/.env
+              echo "LOGIC_APPS_URL=$(LOGIC_APPS_URL)" >> backend_sistema_notificaciones/.env
+            workingDirectory: $(Build.SourcesDirectory)
+          displayName: "Crear archivo .env"
+        - task: CmdLine@2
+          inputs:
+            script: |
               cd backend_sistema_notificaciones
-              docker build -t $(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG) --build-arg DB_USERNAME=$(DB_USERNAME) --build-arg DB_PASSWORD=$(DB_PASSWORD) --build-arg DB_DATABASE=$(DB_DATABASE) --build-arg DB_HOST=$(DB_HOST) --build-arg DB_PORT=$(DB_PORT) --build-arg DB_DIALECT=$(DB_DIALECT) --build-arg DB_OPERATOR_ALIASES=$(DB_OPERATOR_ALIASES) --build-arg NODE_ENV=$(NODE_ENV) --build-arg KEY_SQ=$(KEY_SQ) --build-arg LOGIC_APPS_URL=$(LOGIC_APPS_URL) .
+              docker build --env-file .env -t $(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG) .
           displayName: "construir imagen del backend"
         
         - task: CmdLine@2
