@@ -8,11 +8,12 @@ import Footer from "../../componentes/footer";
 export default function Page() {
   const [correos, setCorreos] = useState([]);
   const [sentiments, setSentiments] = useState({});
+  const [opinions, setOpinions] = useState({});
   const [loading, setLoading] = useState({});
 
   const obtenerCorreos = async () => {
     try {
-      const response = await peticionGet('recibirmensajes');
+      const response = await peticionGet('recibirmensajes?code=4%2F0ASVgi3IDpt53ewI_IQ8qOy7TxlgBv9oDvxLKvbUt1hgo-gVSnxYATpF3F0L55yKcWox85g&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly');
       console.log("Respuesta de la API:", response);
       const data = await response;
       if (data.emails) {
@@ -23,14 +24,14 @@ export default function Page() {
     }
   };
 
-  const fetchSentiment = async (index, text) => {
+  const fetchAnalysis = async (index, text) => {
     if (!text.trim()) return;
     
     setLoading(prev => ({ ...prev, [index]: true }));
     try {
-      if (sentiments[index]) {
-        // Si ya tiene sentimiento, al hacer clic se oculta
+      if (sentiments[index] || opinions[index]) {
         setSentiments(prev => ({ ...prev, [index]: null }));
+        setOpinions(prev => ({ ...prev, [index]: null }));
       } else {
         const response = await fetch('https://text-analisis.cognitiveservices.azure.com/text/analytics/v3.1/sentiment', {
           method: 'POST',
@@ -43,14 +44,23 @@ export default function Page() {
 
         const data = await response.json();
         if (response.ok && data.documents.length > 0) {
-          setSentiments(prev => ({ ...prev, [index]: data.documents[0].sentiment }));
+          const doc = data.documents[0];
+          setSentiments(prev => ({ ...prev, [index]: doc.sentiment }));
+          
+          // Extraer opiniones si existen
+          if (doc.sentences) {
+            const extractedOpinions = doc.sentences.flatMap(sentence => sentence.opinions || []);
+            setOpinions(prev => ({ ...prev, [index]: extractedOpinions }));
+          }
         } else {
           setSentiments(prev => ({ ...prev, [index]: null }));
+          setOpinions(prev => ({ ...prev, [index]: null }));
         }
       }
     } catch (error) {
       console.error(error);
       setSentiments(prev => ({ ...prev, [index]: null }));
+      setOpinions(prev => ({ ...prev, [index]: null }));
     } finally {
       setLoading(prev => ({ ...prev, [index]: false }));
     }
@@ -94,12 +104,22 @@ export default function Page() {
                     )}
                     <button 
                       className="btn btn-success mt-2" 
-                      onClick={() => fetchSentiment(index, email.snippet)} 
+                      onClick={() => fetchAnalysis(index, email.snippet)} 
                       disabled={loading[index]}
                     >
                       {loading[index] ? 'Analizando...' : 'Analizar Mensaje'}
                     </button>
-                    {sentiments[index] && <p>Opinion detectada: {sentiments[index]}</p>}
+                    {sentiments[index] && <p>🔍 Opinión detectada: {sentiments[index]}</p>}
+                    {opinions[index] && opinions[index].length > 0 && (
+                      <div>
+                        <strong>💬 Opiniones extraídas:</strong>
+                        <ul>
+                          {opinions[index].map((op, idx) => (
+                            <li key={idx}> {op.target.text}: {op.assessments.map(a => `${a.text} (${a.sentiment})`).join(', ')} </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
