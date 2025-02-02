@@ -96,6 +96,6 @@ stages:
               acrUsername: '$(ACR_USERNAME)'
               acrPassword: '$(ACR_PASSWORD)'
               imageToDeploy: '$(CONTAINER_REGISTRY_URL)/frontend-notificaciones:$(BACKEND_TAG)'
-              containerAppName: 'tf-frontend'
+              containerAppName: 'tf-frontend1'
               resourceGroup: 'TrabajoFinalCloud'
               targetPort: '3000'
