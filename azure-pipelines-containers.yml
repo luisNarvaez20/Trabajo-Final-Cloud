@@ -1,0 +1,101 @@
+trigger:
+- main
+
+pr:
+  branches:
+    include:
+      - main
+pool:
+  name: default
+  demands:
+  - agent.name -equals pool1
+
+stages:
+  - stage: Register_Backend
+    displayName: "construir y registrar backend en Container Registry"
+    jobs:
+      - job: Build_Backend_Container
+        steps:
+        - task: UseNode@1
+          inputs:
+            version: '20.x'
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
+            scriptType: 'ps'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'az acr login --name $(CONTAINER_REGISTRY_URL)'
+
+        - task: CmdLine@2
+          inputs:
+            script: |
+              cd backend_sistema_notificaciones
+              docker build -t $(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG) --build-arg DB_USERNAME="$(DB_USERNAME)" --build-arg DB_PASSWORD="$(DB_PASSWORD)" --build-arg DB_DATABASE="$(DB_DATABASE)" --build-arg DB_HOST="$(DB_HOST)" --build-arg DB_PORT="$(DB_PORT)" --build-arg DB_DIALECT="$(DB_DIALECT)" --build-arg DB_OPERATOR_ALIASES="$(DB_OPERATOR_ALIASES)" --build-arg NODE_ENV="$(NODE_ENV)" --build-arg KEY_SQ="$(KEY_SQ)" --build-arg LOGIC_APPS_URL="$(LOGIC_APPS_URL)" .
+          displayName: "construir imagen del backend"
+        
+        - task: CmdLine@2
+          inputs:
+            script: 'docker push $(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG)'
+          displayName: "Registrar Backend a Container Registry"
+  - stage: Deploy_backend
+    displayName: "Desplegar contenedor de backend a Container App"
+    dependsOn: Register_Backend
+    jobs:
+      - job: Release_backend_container
+        steps:
+          - task: AzureContainerApps@1
+            inputs:
+              azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
+              acrName: '$(ACR_NAME)'
+              acrUsername: '$(ACR_USERNAME)'
+              acrPassword: '$(ACR_PASSWORD)'
+              imageToDeploy: '$(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG)'
+              containerAppName: 'tf-backend'
+              resourceGroup: 'TrabajoFinalCloud'
+              targetPort: '8000'
+
+
+  - stage: Register_Frontend
+    dependsOn: Deploy_backend
+    displayName: "construir y registrar Frontend en Container Registry"
+    jobs:
+      - job: Build_frontend_Container
+        steps:
+        - task: UseNode@1
+          inputs:
+            version: '20.x'
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
+            scriptType: 'ps'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'az acr login --name $(CONTAINER_REGISTRY_URL)'
+
+        - task: CmdLine@2
+          inputs:
+            script: |
+              cd frontend-sistema-notificaciones
+              dir
+              docker build -t $(CONTAINER_REGISTRY_URL)/frontend-notificaciones:$(BACKEND_TAG) --build-arg NEXT_PUBLIC_API_URL="$(NEXT_PUBLIC_API_URL)" .
+          displayName: "construir imagen del Frontend"
+        
+        - task: CmdLine@2
+          inputs:
+            script: 'docker push $(CONTAINER_REGISTRY_URL)/frontend-notificaciones:$(BACKEND_TAG)'
+          displayName: "Registrar Frontend a Container Registry"
+  - stage: Deploy_Frontend
+    displayName: "Desplegar contenedor de Frontend a Container App"
+    dependsOn: Register_Frontend
+    jobs:
+      - job: Release_frontend_container
+        steps:
+          - task: AzureContainerApps@1
+            inputs:
+              azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
+              acrName: '$(ACR_NAME)'
+              acrUsername: '$(ACR_USERNAME)'
+              acrPassword: '$(ACR_PASSWORD)'
+              imageToDeploy: '$(CONTAINER_REGISTRY_URL)/frontend-notificaciones:$(BACKEND_TAG)'
+              containerAppName: 'tf-frontend1'
+              resourceGroup: 'TrabajoFinalCloud'
+              targetPort: '3000'
