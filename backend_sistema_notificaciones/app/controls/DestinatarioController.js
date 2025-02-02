@@ -174,5 +174,23 @@ class DestinatarioControl {
         }
     }
 
+    async listarCorreosDestinatarios() {
+        try {
+            const listar = await destinatario.findAll({
+                attributes: ['correo'], // Solo obtener el campo 'correo'
+            });
+    
+            // Extraer solo los correos en un array
+            const correos = listar.map(d => d.correo);
+    
+            return correos; // Retorna un array con los correos
+    
+        } catch (error) {
+            console.error('Error al obtener los correos de destinatarios:', error);
+            throw new Error("Error al obtener los correos: " + error.message);
+        }
+    }
+    
+
 }
 module.exports = DestinatarioControl;

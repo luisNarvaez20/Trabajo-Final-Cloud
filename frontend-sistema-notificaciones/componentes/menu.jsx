@@ -34,6 +34,10 @@ export default function Menu() {
                             <li className="nav-item">
                                 <Link className="nav-link active text-white" aria-current="page" href="/mensaje">Enviar Mensaje</Link>
                             </li>
+
+                            <li className="nav-item">
+                                <Link className="nav-link active text-white" aria-current="page" href="/recibir_mensaje">Recibidos</Link>
+                            </li>
                         </>
 
                         <li className="nav-item">
