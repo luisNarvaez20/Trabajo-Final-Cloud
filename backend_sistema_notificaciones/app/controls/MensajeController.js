@@ -29,6 +29,17 @@ const upload = multer({ storage: storage });
 
 class MensajeControl {
 
+    async listarMensaje(req, res) {
+        var lista = await mensaje.findAll({
+            include: [
+                { model: models.grupo, as: "grupo", attributes: ['nombre', 'external_id'] },
+            ],
+            attributes: ['asunto','contenido', ['external_id', 'id'], 'tipo', 'fecha']
+        });
+        res.status(200);
+        res.json({ msg: "OK", code: 200, datos: lista });
+    }
+
     // Función para guardar un mensaje
     async guardar(req, res) {
         if (req.body.hasOwnProperty('asunto') &&

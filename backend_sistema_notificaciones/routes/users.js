@@ -81,5 +81,6 @@ router.post('/destinatario/editar/:external', auth, destinatarioController.modif
 router.post('/mensaje/guardar', auth, mensajeController.guardar);
 router.post('/mensaje/guardar_archivo', auth, mensajeController.guardar_archivo);
 router.post('/mensaje/enviar', auth, mensajeController.enviarMensajeLogicApps);
+router.get('/mensaje/listar', auth, mensajeController.listarMensaje);
 
 module.exports = router;
