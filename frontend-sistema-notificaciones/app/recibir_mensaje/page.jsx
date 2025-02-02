@@ -13,7 +13,7 @@ export default function Page() {
 
   const obtenerCorreos = async () => {
     try {
-      const response = await peticionGet('recibirmensajes?code=4%2F0ASVgi3IDpt53ewI_IQ8qOy7TxlgBv9oDvxLKvbUt1hgo-gVSnxYATpF3F0L55yKcWox85g&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly');
+      const response = await peticionGet('recibirmensajes');
       console.log("Respuesta de la API:", response);
       const data = await response;
       if (data.emails) {
