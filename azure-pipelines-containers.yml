@@ -43,16 +43,12 @@ stages:
     jobs:
       - job: Release_backend_container
         steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
-              scriptType: 'ps'
-              scriptLocation: 'inlineScript'
-              inlineScript: 'az acr login --name $(CONTAINER_REGISTRY_URL)'
           - task: AzureContainerApps@1
             inputs:
               azureSubscription: 'Azure for Students(be47ff6d-9100-47c2-ab9a-af967aabfd60)'
               acrName: '$(CONTAINER_REGISTRY_URL)'
+              acrUsername: 'tfcontainerregistry'
+              acrPassword: '$(ACR_PASSWORD)'
               imageToDeploy: '$(CONTAINER_REGISTRY_URL)/backend-notificaciones:$(BACKEND_TAG)'
               containerAppName: 'tf-backend'
               resourceGroup: 'TrabajoFinalCloud'
