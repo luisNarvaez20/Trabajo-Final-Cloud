@@ -17,6 +17,7 @@ export default function Principal() {
     const external = getExternal();
     const [showModal, setShowModal] = useState(false);
     const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
+    const [grupoSeleccionado2, setGrupoSeleccionado2] = useState(null);
     const [obt, setObt] = useState(false);
 
     useEffect(() => {
@@ -34,22 +35,44 @@ export default function Principal() {
         });
     }, [external, key, router]);
 
-    const abrirModal = (grupo) => {
+    const abrirModal = async (grupo) => {
+        try {
+            const info = await peticionGet(`destinatario/listar_grupo/${grupo.external_id}`, key);
 
-        peticionGet(`destinatario/listar_grupo/${grupo.external_id}`, key).then((info) => {
-            if (info.code === 200) {
-                setGrupoSeleccionado(info.datos);
-                setShowModal(true);
-                setObt(true);
-            } else if (["token expirado o no valido", "token no valido", "no existe token"].includes(info.tag)) {
-                mensajes(info.tag, "Error", "error");
-                Cookies.remove("token");
-                borrarSesion();
-                router.push("/login");
-            } else {
-                mensajes("No se pudo obtener los destinatarios", "Error", "error");
+            if (info.code !== 200) {
+                manejarError(info.msg);
+                return;
             }
-        });
+
+            setGrupoSeleccionado(info.datos);
+
+            const info2 = await peticionGet(`mensaje/listar/${grupo.external_id}`, key);
+
+            if (info2.code !== 200) {
+                mensajes("No se pudo obtener los mensajes", "Error", "error");
+                return;
+            }
+
+            setGrupoSeleccionado2(info2.info);
+            setShowModal(true);
+            setObt(true);
+        } catch (error) {
+            console.error("Error al abrir el modal:", error);
+            mensajes("Ocurrió un error inesperado", "Error", error);
+        }
+    };
+
+    const manejarError = (tag) => {
+        const erroresToken = ["token expirado o no valido", "token no valido", "no existe token"];
+
+        if (erroresToken.includes(tag)) {
+            mensajes(tag, "Error", "error");
+            Cookies.remove("token");
+            borrarSesion();
+            router.push("/login");
+        } else {
+            mensajes(tag, "Error", 'error');
+        }
     };
 
     return (
@@ -84,22 +107,48 @@ export default function Principal() {
                 </div>
             </div>
 
-            {/* Modal de detalles */}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+             {/* Modal de detalles */}
+             <Modal show={showModal} onHide={() => setShowModal(false)} >
                 <Modal.Header closeButton>
                     <Modal.Title>Detalles del Grupo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p><strong>Destinatarios:</strong> </p>
-                    {grupoSeleccionado?.length > 0 ? (
-                        grupoSeleccionado.map((grupo, index) => (
-                            <div key={index} className="mb-3">
-                                <p><strong>nombres:</strong> {grupo.nombres + ' ' + grupo.apellidos + '   '} <strong>correo:</strong> {grupo.correo}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No hay destinatarios disponibles.</p>
-                    )}
+                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                        <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>
+                            <strong>Destinatarios:</strong>
+                        </p>
+                        <div style={{ maxHeight: '200px', overflowY: 'auto', paddingRight: '10px', textAlign: 'left' }}>
+                            {grupoSeleccionado?.length > 0 ? (
+                                grupoSeleccionado.map((grupo, index) => (
+                                    <p key={index} className="mb-4">
+                                        <strong>Nombres:</strong> {grupo.nombres} {grupo.apellidos} {' '}
+                                        <strong>Correo:</strong> {grupo.correo}
+                                    </p>
+                                ))
+                            ) : (
+                                <p>No hay destinatarios disponibles.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                        <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>
+                            <strong>Historial   Mensajes:</strong>
+                        </p>
+                        <div style={{ maxHeight: '200px', overflowY: 'auto', paddingRight: '10px', textAlign: 'left' }}>
+                            {grupoSeleccionado2?.length > 0 ? (
+                                grupoSeleccionado2.map((mej, index) => (
+                                    <p key={index} className="mb-4">
+                                        <strong>Asunto:</strong> {mej.asunto} {' '}
+                                        <strong>Contenido:</strong> {mej.contenido} {' '}
+                                        <strong>Fecha:</strong> {mej.fecha}
+                                    </p>
+                                ))
+                            ) : (
+                                <p>No hay mensajes disponibles.</p>
+                            )}
+                        </div>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>

@@ -12,13 +12,14 @@ import { borrarSesion, getExternal, getToken } from "../../hooks/SessionUtilClie
 export default function Page() {
     const token = getToken();
     const router = useRouter();
+    const external = getExternal();
 
     const [obt, setObt] = useState(false);
     const [destinatario, setDestinatario] = useState([]);
 
     useEffect(() => {
         if (!obt) {
-            peticionGet('destinatario/listar', token).then((info) => {
+            peticionGet('destinatario/listar/'+external, token).then((info) => {
                 if (info.code === 200) {
                     console.log(info);
                     setDestinatario(info.datos);
