@@ -76,7 +76,7 @@ stages:
             script: |
               cd frontend-sistema-notificaciones
               dir
-              docker build -t $(CONTAINER_REGISTRY_URL)/frontend-notificaciones:$(BACKEND_TAG) --build-arg NEXT_PUBLIC_API_URL="$(NEXT_PUBLIC_API_URL)".
+              docker build -t $(CONTAINER_REGISTRY_URL)/frontend-notificaciones:$(BACKEND_TAG) --build-arg NEXT_PUBLIC_API_URL="$(NEXT_PUBLIC_API_URL)" .
           displayName: "construir imagen del Frontend"
         
         - task: CmdLine@2
