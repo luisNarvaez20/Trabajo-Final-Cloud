@@ -9,7 +9,7 @@ var uuid = require('uuid');
 var path = require('path');
 var fs = require('fs');
 var multer = require('multer'); // Importamos multer
-
+var crypto = require('crypto');
 // Configuración de almacenamiento con Multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -205,9 +205,10 @@ class MensajeControl {
             if (!messageResult) {
                 return res.status(401).json({ msg: "ERROR", tag: "No se puede crear el mensaje", code: 401 });
             }
-            // Obtener URL de Logic Apps desde config
-            let logicAppsUrl = process.env.LOGIC_APPS_URL;
-            logicAppsUrl = decodeURIComponent(logicAppsUrl);
+            // Obtener URL de Logic Apps desencriptandola por base64
+            const encryptedText = process.env.LOGIC_APPS_URL;
+            const decrypted = Buffer.from(encryptedText, "base64").toString("utf8");
+            let logicAppsUrl = decrypted;
             if (!logicAppsUrl) {
                 return res.status(500).json({
                     msg: "ERROR",
