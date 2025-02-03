@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { peticionGet } from "../../hooks/Conexion";
-import Link from "next/link";
 import Menu from "../../componentes/menu";
 import Footer from "../../componentes/footer";
 
@@ -9,6 +8,7 @@ export default function Page() {
   const [correos, setCorreos] = useState([]);
   const [sentiments, setSentiments] = useState({});
   const [opinions, setOpinions] = useState({});
+  const [confidenceScores, setConfidenceScores] = useState({});
   const [loading, setLoading] = useState({});
 
   const obtenerCorreos = async () => {
@@ -32,6 +32,7 @@ export default function Page() {
       if (sentiments[index] || opinions[index]) {
         setSentiments(prev => ({ ...prev, [index]: null }));
         setOpinions(prev => ({ ...prev, [index]: null }));
+        setConfidenceScores(prev => ({ ...prev, [index]: null }));
       } else {
         const response = await fetch('https://text-analisis.cognitiveservices.azure.com/text/analytics/v3.1/sentiment', {
           method: 'POST',
@@ -46,6 +47,7 @@ export default function Page() {
         if (response.ok && data.documents.length > 0) {
           const doc = data.documents[0];
           setSentiments(prev => ({ ...prev, [index]: doc.sentiment }));
+          setConfidenceScores(prev => ({ ...prev, [index]: doc.confidenceScores }));
           
           // Extraer opiniones si existen
           if (doc.sentences) {
@@ -55,12 +57,14 @@ export default function Page() {
         } else {
           setSentiments(prev => ({ ...prev, [index]: null }));
           setOpinions(prev => ({ ...prev, [index]: null }));
+          setConfidenceScores(prev => ({ ...prev, [index]: null }));
         }
       }
     } catch (error) {
       console.error(error);
       setSentiments(prev => ({ ...prev, [index]: null }));
       setOpinions(prev => ({ ...prev, [index]: null }));
+      setConfidenceScores(prev => ({ ...prev, [index]: null }));
     } finally {
       setLoading(prev => ({ ...prev, [index]: false }));
     }
@@ -88,20 +92,6 @@ export default function Page() {
                     <p><strong>📩 Enviado Por:</strong> {email.from}</p>
                     <p><strong>📌 Asunto:</strong> {email.subject}</p>
                     <p><strong>📝 Cuerpo:</strong> {email.snippet}</p>
-                    {email.attachments && email.attachments.length > 0 && (
-                      <div>
-                        <strong>📎 Archivos Adjuntos:</strong>
-                        <ul>
-                          {email.attachments.map((file, idx) => (
-                            <li key={idx}>
-                              <a href={file.fileUrl} download={file.filename} target="_blank" rel="noopener noreferrer">
-                                📂 {file.filename}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                     <button 
                       className="btn btn-success mt-2" 
                       onClick={() => fetchAnalysis(index, email.snippet)} 
@@ -109,13 +99,18 @@ export default function Page() {
                     >
                       {loading[index] ? 'Analizando...' : 'Analizar Mensaje'}
                     </button>
-                    {sentiments[index] && <p>🔍 Opinión detectada: {sentiments[index]}</p>}
+                    {sentiments[index] && (
+                      <div>
+                        <p>🔍 Opinión detectada: {sentiments[index]}</p>
+                        <p>📊 Confianza - Positivo: {confidenceScores[index]?.positive?.toFixed(2)} | Negativo: {confidenceScores[index]?.negative?.toFixed(2)} | Neutral: {confidenceScores[index]?.neutral?.toFixed(2)}</p>
+                      </div>
+                    )}
                     {opinions[index] && opinions[index].length > 0 && (
                       <div>
                         <strong>💬 Opiniones extraídas:</strong>
                         <ul>
                           {opinions[index].map((op, idx) => (
-                            <li key={idx}> {op.target.text}: {op.assessments.map(a => `${a.text} (${a.sentiment})`).join(', ')} </li>
+                            <li key={idx}> {op.target.text}: {op.assessments.map(a => `${a.text} (${a.sentiment}, confianza: ${a.confidenceScores.positive.toFixed(2)})`).join(', ')} </li>
                           ))}
                         </ul>
                       </div>
