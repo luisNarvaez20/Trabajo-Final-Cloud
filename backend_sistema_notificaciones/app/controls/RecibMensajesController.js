@@ -10,8 +10,8 @@ var destinatarioController = new DestinatarioController();
 dotenv.config();
 
 let SCOPES = process.env.SCOPES;
-let TOKEN_PATH = process.env.TOKEN_PATH;
-let CREDENTIALS_PATH = process.env.CREDENTIALS_PATH;
+let TOKEN_PATH = Buffer.from(process.env.TOKEN_PATH, "base64").toString("utf8");
+let CREDENTIALS_PATH = Buffer.from(process.env.CREDENTIALS_PATH, "base64").toString("utf8");
 
 function getAuthUrl(oAuth2Client) {
     const authUrl = oAuth2Client.generateAuthUrl({
@@ -24,6 +24,7 @@ function getAuthUrl(oAuth2Client) {
 class RecibMensajesControl {
 
     async obtenerToken(req, res) {
+
         const credentials = JSON.parse(CREDENTIALS_PATH);
         const { client_secret, client_id, redirect_uris } = credentials.web;
 
@@ -45,11 +46,16 @@ class RecibMensajesControl {
     // Método para recibir los mensajes después de autenticarte
     async recibirMensajes(req, res) {
         try {
+
+            // Leer el token guardado
+            console.log("TOKEN_PATH: ", TOKEN_PATH);
+            console.log("CREDENTIALS_PATH: ", CREDENTIALS_PATH);
             if (!TOKEN_PATH) {
                 return res.status(401).json({ message: "No se encontró un token. Autentícate primero." });
             }
     
             const credentials = JSON.parse(CREDENTIALS_PATH);
+            //console.log("credentials    ", credentials);
             const { client_secret, client_id, redirect_uris } = credentials.web;
     
             const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
