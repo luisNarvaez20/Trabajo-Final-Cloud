@@ -47,11 +47,14 @@ class RecibMensajesControl {
         try {
 
             // Leer el token guardado
+            console.log("TOKEN_PATH: ", TOKEN_PATH);
+            console.log("CREDENTIALS_PATH: ", CREDENTIALS_PATH);
             if (!TOKEN_PATH) {
                 return res.status(401).json({ message: "No se encontró un token. Autentícate primero." });
             }
     
             const credentials = JSON.parse(CREDENTIALS_PATH);
+            //console.log("credentials    ", credentials);
             const { client_secret, client_id, redirect_uris } = credentials.web;
     
             const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
