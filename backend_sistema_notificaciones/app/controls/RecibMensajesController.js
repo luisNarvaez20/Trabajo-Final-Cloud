@@ -10,8 +10,8 @@ var destinatarioController = new DestinatarioController();
 dotenv.config();
 
 let SCOPES = process.env.SCOPES;
-let TOKEN_PATH = Buffer.from(process.env.TOKEN_PATH, "base64").toString("utf8");;
-let CREDENTIALS_PATH = Buffer.from(process.env.CREDENTIALS_PATH, "base64").toString("utf8");;
+let TOKEN_PATH = Buffer.from(process.env.TOKEN_PATH, "base64").toString("utf8");
+let CREDENTIALS_PATH = Buffer.from(process.env.CREDENTIALS_PATH, "base64").toString("utf8");
 
 function getAuthUrl(oAuth2Client) {
     const authUrl = oAuth2Client.generateAuthUrl({
@@ -24,6 +24,7 @@ function getAuthUrl(oAuth2Client) {
 class RecibMensajesControl {
 
     async obtenerToken(req, res) {
+
         const credentials = JSON.parse(CREDENTIALS_PATH);
         const { client_secret, client_id, redirect_uris } = credentials.web;
 
