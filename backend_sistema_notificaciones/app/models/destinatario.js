@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     destinatario.associate = function (models) {
+        destinatario.belongsTo(models.usuario, { foreignKey: 'id_usuario' });
         destinatario.belongsTo(models.grupo, { foreignKey: 'id_grupo' });
     };
 

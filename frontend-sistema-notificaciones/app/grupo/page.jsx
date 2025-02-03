@@ -34,7 +34,7 @@ export default function Page() {
         var datos = {
             'nombre': data.nombre,
             'tipo': data.tipo,
-            'external': external
+            'external': external,
         };
 
         peticionPost('grupo/guardar', datos, key).then((info) => {
@@ -42,15 +42,15 @@ export default function Page() {
                 mensajes("Grupo creado correctamente", "Informacion", "success")
                 router.push("/principal");
             } else if (info.code !== 200 && (info.tag === "token expirado o no valido" || info.tag === "token no valido" || info.tag === "no existe token")) {
-                mensajes(info.tag, "Error", "error");
+                mensajes("dmgfdmg", info.tag, "Error", "error");
                 Cookies.remove("token");
                 borrarSesion();
                 router.push("/login")
             } else if (info.code !== 200 && info.tag === "Acceso no autorizado") {
                 router.push("/login")
-                mensajes(info.tag, "Informacion", "error");
+                mensajes("daefmnsenfe", info.tag, "Informacion", "error");
             } else {
-                mensajes(info.msg, "Error", "error")
+                mensajes("fejfirfjr", info.msg, "Error", "error")
             }
         });
     };

@@ -2,6 +2,7 @@
 var models = require('../models')
 var destinatario = models.destinatario;
 var grupo = models.grupo;
+var usuario = models.usuario;
 class DestinatarioControl {
     async listar(req, res) {
         var lista = await destinatario.findAll({
@@ -53,6 +54,38 @@ class DestinatarioControl {
             return res.status(500).json({ msg: "Error interno del servidor", code: 500 });
         }
     }
+
+
+    async listar_User(req, res) {
+        try {
+            var person = await usuario.findOne({
+                where: { external_id: req.params.external },
+            });
+
+            if (!person) {
+                return res.status(404).json({ msg: "Usuario no encontrado", code: 404 });
+            }
+
+            const listar = await destinatario.findAll({
+                include: [
+                    { model: models.grupo, as: "grupo", attributes: ['nombre', 'external_id'] },
+                ],
+                attributes: ['nombres','apellidos', ['external_id', 'id'], 'correo'],
+                where: { id_usuario: person.id },
+            });
+
+            if (listar.length === 0) { // Si no hay grupos creados
+                return res.json({ msg: "No hay destinatarios disponibles", code: 200, info: [] });
+            }
+
+            return res.json({ msg: "OK!", code: 200, info: listar });
+
+        } catch (error) {
+            console.error('Error al obtener destinatarios:', error);
+            return res.status(500).json({ msg: "Error al obtener los destinatarios del usuario", code: 500, error: error.message });
+        }
+    }
+
     
 
     async obtener(req, res) {
@@ -77,8 +110,16 @@ class DestinatarioControl {
         if (req.body.hasOwnProperty('nombres') &&
             req.body.hasOwnProperty('apellidos') &&
             req.body.hasOwnProperty('correo') &&
-            req.body.hasOwnProperty('id_grupo')) {
+            req.body.hasOwnProperty('id_grupo')&&
+            req.body.hasOwnProperty('id_usuario')) {
                 var uuid = require('uuid');
+                var usuarioA = await usuario.findOne({
+                    where: { external_id: req.body.id_usuario },
+                });
+                if (usuarioA == undefined || usuarioA == null) {
+                    res.status(401);
+                    res.json({ msg: "ERROR", tag: "No se encuentra la mota esclava", code: 401 });
+                }
                 var grupoA = await grupo.findOne({
                     where: { external_id: req.body.id_grupo },
                 });
@@ -92,7 +133,8 @@ class DestinatarioControl {
                     apellidos: req.body.apellidos,
                     external_id: uuid.v4(),
                     correo: req.body.correo,
-                    id_grupo: grupoA.id
+                    id_grupo: grupoA.id,
+                    id_usuario: usuarioA.id
                 }
                     var result = await destinatario.create(data);
                     if (result === null) {

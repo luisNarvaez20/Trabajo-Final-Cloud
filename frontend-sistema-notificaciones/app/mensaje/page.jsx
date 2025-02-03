@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import { useForm } from 'react-hook-form';
 import mensajes from "../../componentes/Mensajes";
 import * as Yup from 'yup';
@@ -8,18 +8,102 @@ import { peticionGet, peticionPost, peticionPost2 } from "../../hooks/Conexion";
 import { getToken, getExternal } from "../../hooks/SessionUtilClient";
 import Menu from "../../componentes/menu";
 import { useRouter } from 'next/navigation';
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importa los íconos
+
 import Cookies from 'js-cookie';
 
 export default function Page() {
   const [files, setFiles] = useState([]);
   const [totalFileSize, setTotalFileSize] = useState(0);
+  const [text, setText] = useState('');
+  const [message, setMessage] = useState('');
   const [uploading, setUploading] = useState(false);
   const external = getExternal();
   const key = getToken();
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [showMessageArea, setShowMessageArea] = useState(false);
   const [groupOptions, setGroupOptions] = useState([]);
+  const [hoveredError, setHoveredError] = useState(null);
+  const [showErrors, setShowErrors] = useState(false);
+  const [errors2, setErrors] = useState([]);
+  const divRef = useRef(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!showErrors) return;
+
+    const fetchErrors = async () => {
+      if (text.trim() === '') {
+        setErrors([]);
+        setMessage('');
+        return;
+      }
+
+      try {
+        const response = await fetch('https://api.languagetool.org/v2/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ 'text': text, 'language': 'es' }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setErrors(data.matches || []);
+          setMessage(data.matches.length ? '' : 'No se encontraron errores.');
+        } else {
+          setMessage('Error al verificar el texto.');
+        }
+      } catch (error) {
+        console.error(error);
+        setMessage('Hubo un problema con la solicitud.');
+      }
+    };
+
+    const timeoutId = setTimeout(fetchErrors, 500);
+    return () => clearTimeout(timeoutId);
+  }, [text, showErrors]);
+
+  const getHighlightedText = () => {
+    const elements = [];
+    let lastIndex = 0;
+    errors2.forEach((err, index) => {
+      const beforeText = text.slice(lastIndex, err.offset);
+      const errorText = text.slice(err.offset, err.offset + err.length);
+      if (beforeText) {
+        elements.push(<span key={`before-${index}`}>{beforeText}</span>);
+      }
+      elements.push(
+        <span
+          key={`error-${index}`}
+          style={{ backgroundColor: 'yellow', color: 'red', cursor: 'pointer' }}
+          className="highlighted-word"
+          onMouseEnter={() => handleMouseEnter(err.offset)}
+          onMouseLeave={handleMouseLeave}
+        >
+          {errorText}
+        </span>
+      );
+      lastIndex = err.offset + err.length;
+    });
+    elements.push(<span key="remaining">{text.slice(lastIndex)}</span>);
+    return elements;
+  };
+
+  const handleInput = (e) => {
+    setValue('contenido', e.target.value);
+  };
+
+  const handleMouseEnter = (errorId) => {
+    setHoveredError(errorId);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredError(null);
+  };
+
+  const toggleErrors = () => {
+    setShowErrors(prev => !prev);
+  };
 
   const handleFileChange2 = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -37,7 +121,7 @@ export default function Page() {
   };
 
   const removeFile = (index, event) => {
-    event.preventDefault(); 
+    event.preventDefault();
 
     const newFileList = files.filter((_, i) => i !== index);
     const totalSize = newFileList.reduce((acc, file) => acc + file.size, 0);
@@ -54,9 +138,9 @@ export default function Page() {
   });
 
   const formOptions = { resolver: yupResolver(validationShema) };
-  const { register, handleSubmit, formState, setValue } = useForm(formOptions);
+  const { register, handleSubmit, formState, setValue, watch } = useForm(formOptions);
   const { errors } = formState;
-//convertir archivo a string base64
+  //convertir archivo a string base64
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
@@ -69,10 +153,13 @@ export default function Page() {
       };
     });
   };
-  
+
+  useEffect(() => {
+    setText(watch('contenido') || '');
+  }, [watch('contenido')]); 
 
   const sendData = async (data) => {
-    
+
     const archivosConvertidos = await Promise.all(
       files.map(async (archivo) => {
         //const archivoComprimido = await compressFile(archivo);
@@ -100,13 +187,13 @@ export default function Page() {
       mensajes("El mensaje se envió correctamente", "Éxito", "success");
       router.push("/principal");
     });
-};
-  
+  };
+
 
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await peticionGet("/grupo/listar/"+external, key);
+        const response = await peticionGet("/grupo/listar/" + external, key);
         if (response && response.info) {
           setGroupOptions(response.info);
         } else {
@@ -134,35 +221,35 @@ export default function Page() {
 
   return (
     <div>
-      <div 
-                className="position-fixed top-0 start-0 w-100 h-100"
-                style={{
-                    backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
-                    backgroundSize: "20%",
-                    backgroundRepeat: "no-repeat", 
-                    backgroundPosition: "center",
-                    filter: "blur(4px)",  // Difuminar solo la imagen de fondo
-                    zIndex: "-1"
-                }}
-            ></div>
+      <div
+        className="position-fixed top-0 start-0 w-100 h-100"
+        style={{
+          backgroundImage: "url('https://cdn3d.iconscout.com/3d/premium/thumb/cloud-computing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--technology-hosting-network-storage-web-optimization-pack-seo-illustrations-4812696.png')",
+          backgroundSize: "20%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          filter: "blur(4px)",  // Difuminar solo la imagen de fondo
+          zIndex: "-1"
+        }}
+      ></div>
       <Menu />
       <div className="container py-5">
         <div className="text-center mb-4">
-        <h1 className="text-center" style={{ fontSize: "3em", color: '#205375' }}>Enviar Mensaje</h1>
+          <h1 className="text-center" style={{ fontSize: "3em", color: '#205375' }}>Enviar Mensaje</h1>
         </div>
 
         <div className="d-flex justify-content-center mb-4">
           <div className="card w-75">
             <div className="card-body">
-            <div className="container-fluid d-flex justify-content-center align-items-center">
-                                <img className="card"
-                                    src="https://static.vecteezy.com/system/resources/previews/000/422/384/non_2x/vector-send-message-icon.jpg"
-                                    style={{ width: 80, height: 80 }}
-                                />
-                            </div>
-                            <br />
+              <div className="container-fluid d-flex justify-content-center align-items-center">
+                <img className="card"
+                  src="https://static.vecteezy.com/system/resources/previews/000/422/384/non_2x/vector-send-message-icon.jpg"
+                  style={{ width: 80, height: 80 }}
+                />
+              </div>
+              <br />
               <div className="table-responsive">
-              <label className="form-label" style={{ color: '#1b4f72' }}>Seleccionar Grupo</label>
+                <label className="form-label" style={{ color: '#1b4f72' }}>Seleccionar Grupo</label>
                 <table className="table table-bordered">
                   <thead className="table-light">
                     <tr>
@@ -195,7 +282,7 @@ export default function Page() {
         </div>
 
         {showMessageArea && (
-          <div className="d-flex justify-content-center">
+          <div className="d-flex justify-content-center align-items-center">
             <div className="card w-75">
               <div className="card-body">
                 <p>Destinatarios del grupo: {selectedGroup ? `${selectedGroup.nombre}` : "Ningún destinatario seleccionado"}</p>
@@ -225,14 +312,64 @@ export default function Page() {
 
                 <form onSubmit={handleSubmit(sendData)}>
                   <textarea
+                  value={watch('contenido')}
+                  onChange={handleInput}
                     className="form-control mb-3"
                     placeholder="Escribe tu mensaje aquí..."
                     {...register('contenido')}
                     rows="4"
                   ></textarea>
+
+<div className="d-flex justify-content-end align-items-center">                  
+                   <button 
+      type="button" 
+      onClick={toggleErrors} 
+      style={{ marginTop: "-13px", padding: "3px 10px", display: "flex", alignItems: "center", gap: "3px",  fontSize:'10px'}}
+    >
+      {showErrors ? <FaEye size={18}/> : <FaEyeSlash size={18}/>} 
+      {showErrors ? "Errores Lexicos" : "Errores Lexicos"}
+    </button>
+    </div>
                   {errors.contenido && (
                     <div className="alert alert-danger">{errors.contenido.message}</div>
                   )}
+                  {showErrors && (
+                <div
+                    ref={divRef}
+                    style={{
+                        width: '80%',
+                        minHeight: '150px',
+                        padding: '10px',
+                        border: '1px solid #ccc',
+                        whiteSpace: 'pre-wrap',
+                        marginTop: '-10px',
+                        backgroundColor: '#f9f9f9',
+                    }}
+                >
+                    {getHighlightedText()}
+                </div>
+            )}
+            {hoveredError !== null && (
+                <div style={{marginTop: "5px"}}>
+                    <h5 style={{fontSize:'13px'}}>Sugerencias:</h5>
+                    <ul className="list-group">
+                        {errors2.map((error, index) => {
+                            if (error.offset == hoveredError) {
+                                const palabraIncorrecta = text.substring(error.offset, error.offset + error.length);
+                                return (
+                                    <li key={index} className="list-group-item">
+                                        <strong className="bg-warning px-1 rounded" style={{fontSize:'11px'}}>{palabraIncorrecta+' '}</strong>:  
+                                        {error.replacements.length > 0
+                                            ? error.replacements.map((s, i) => <span key={i} className="text-success" style={{fontSize:'11px'}}>{s.value+' '}</span>)
+                                            : <span style={{fontSize: '11px'}}>Sin sugerencias</span>}
+                                    </li>
+                                );
+                            }
+                            return null;
+                        })}
+                    </ul>
+                </div>
+            )}
 
                   <div className="mb-3">
                     <label className="form-label">Archivos Adjuntos:</label>
@@ -270,11 +407,11 @@ export default function Page() {
                   </div>
 
                   <button type="submit" className="btn btn-success" disabled={totalFileSize > 8 * 1024 * 1024 && uploading} >
-                  {uploading ? "Subiendo..." : "Enviar"}
+                    {uploading ? "Subiendo..." : "Enviar"}
                   </button>
-                  <a href="/principal" className="btn btn-danger" style={{ marginLeft: '8px'}}>
-                                        Cancelar
-                                    </a>
+                  <a href="/principal" className="btn btn-danger" style={{ marginLeft: '8px' }}>
+                    Cancelar
+                  </a>
                 </form>
               </div>
             </div>

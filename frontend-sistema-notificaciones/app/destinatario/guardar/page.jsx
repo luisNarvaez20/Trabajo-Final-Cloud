@@ -14,7 +14,8 @@ import Cookies from 'js-cookie';
 
 export default function Page() {
   const router = useRouter();
-  const token = getToken();
+  const token = getToken()
+  const external = getExternal();
   const [grupo, setGrupo] = useState([]);
   const [obt, setObt] = useState(false);
 
@@ -38,7 +39,8 @@ export default function Page() {
       'nombres': data.nombres,
       'apellidos': data.apellidos,
       'correo': data.correo,
-      'id_grupo': data.grupo
+      'id_grupo': data.grupo,
+      'id_usuario': external
     };
 
     peticionPost('destinatario/guardar', datos, token).then((info) => {
@@ -53,7 +55,7 @@ export default function Page() {
   };
 
   if (!obt) {
-    peticionGet('grupo/listar', token).then((info) => {
+    peticionGet('/grupo/listar/'+external, token).then((info) => {
       console.log(info.info)
       if (info.code === 200) {
         setGrupo(info.info);

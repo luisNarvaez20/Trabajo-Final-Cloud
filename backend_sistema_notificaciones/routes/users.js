@@ -79,6 +79,7 @@ router.post('/destinatario/guardar', auth, destinatarioController.guardar);
 router.get('/destinatario/listar/:external', auth, destinatarioController.obtener);
 router.get('/destinatario/listar/', auth, destinatarioController.listar);
 router.get('/destinatario/listar_grupo/:external', auth, destinatarioController.listar_grupo);
+router.get('/destinatario/listar_user/:external', auth, destinatarioController.listar_User);
 router.post('/destinatario/editar/:external', auth, destinatarioController.modificar);
 
 /*MENSAJE CONTROLLER*/

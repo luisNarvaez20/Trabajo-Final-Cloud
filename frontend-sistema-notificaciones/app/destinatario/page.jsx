@@ -19,10 +19,10 @@ export default function Page() {
 
     useEffect(() => {
         if (!obt) {
-            peticionGet('destinatario/listar/', token).then((info) => {
+            peticionGet('destinatario/listar_user/'+external, token).then((info) => {
                 if (info.code === 200) {
                     console.log(info);
-                    setDestinatario(info.datos);
+                    setDestinatario(info.info);
                     setObt(true);
                 } else if (["token expirado o no valido", "token no valido", "no existe token"].includes(info.tag)) {
                     mensajes(info.tag, "Error", "error");
