@@ -81,6 +81,33 @@ class MensajeControl {
         }
     }
 
+     //METODO PARA OBTENER DATOS DE MENSAJES
+     async obtener(req, res) {
+        try {
+
+            // Buscar el grupo usando el external_id de los parámetros de la URL
+            const g = await grupo.findOne({
+                where: { external_id: req.params.external }
+            });
+
+            if (!g) {
+                return res.status(404).json({ msg: 'Grupo no encontrado', code: 404 });
+            }
+
+            // Buscar los mensajes asociados al grupo encontrado
+            const listar = await mensaje.findAll({
+                attributes: ['asunto', 'contenido', 'fecha', 'tipo', 'external_id'],
+                where: { id_grupo: g.id }
+            });
+
+
+            res.json({ msg: 'OK!', code: 200, info: listar || [] });
+        } catch (error) {
+            console.error('Error al obtener los mensajes:', error);
+            res.status(500).json({ msg: 'Error al obtener los mensajes', code: 500 });
+        }
+    }
+
     async guardar_archivo(req, res) {
         upload.single('archivo')(req, res, async function (err) {
             if (err) {
