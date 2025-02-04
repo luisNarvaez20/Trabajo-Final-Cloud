@@ -77,7 +77,7 @@ class RecibMensajesControl {
 
             const fechaFiltro = "after:2025/02/03";
             const query = remitentesPermitidos.map(email => `from:${email}`).join(" OR ") + ` ${fechaFiltro}`;
-            const response = await gmail.users.messages.list({ userId: 'me', maxResults: 5, q: query });
+            const response = await gmail.users.messages.list({ userId: 'me', maxResults: 9, q: query });
     
             if (!response.data.messages) {
                 return res.status(200).json({ message: "No hay correos nuevos." });
