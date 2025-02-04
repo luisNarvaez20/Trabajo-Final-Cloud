@@ -107,7 +107,7 @@ export async function peticionPut(recurso, data, key = "") {
         headers["token-api"] = key;
     }
 
-    const response = await fetch(`${URL}/${recurso}`, {
+    const response = await fetch(`${URL}${recurso}`, {
         method: "PUT",
         headers: headers,
         body: JSON.stringify(data),
