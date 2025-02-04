@@ -78,11 +78,11 @@ export default function Principal() {
 
     return (
         <div className="d-flex flex-column min-vh-100 position-relative">
-            <Menu />
-            <div className="container-fluid p-1 position-relative" style={{ paddingLeft: '40px', paddingRight: '40px' }}>
+            <div className="container-fluid p-1 position-relative">
+              <Menu />
                                 <br />
                 <div className="d-flex flex-column align-items-center flex-grow-1">
-                    <div>
+                    <div className="container">
                         <div className="row">
                             {grupos.length > 0 ? (
                                 grupos.map((card, index) => (
