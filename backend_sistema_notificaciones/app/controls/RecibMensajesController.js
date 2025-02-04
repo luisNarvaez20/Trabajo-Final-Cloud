@@ -70,6 +70,11 @@ class RecibMensajesControl {
     
             const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
             const remitentesPermitidos = await destinatarioController.listarCorreosDestinatarios();
+
+            if (remitentesPermitidos.length === 0) {
+                return res.status(200).json({ message: "No hay correos de remitentes permitidos." });
+            }
+
             const fechaFiltro = "after:2025/01/31";
             const query = remitentesPermitidos.map(email => `from:${email}`).join(" OR ") + ` ${fechaFiltro}`;
             const response = await gmail.users.messages.list({ userId: 'me', maxResults: 5, q: query });
