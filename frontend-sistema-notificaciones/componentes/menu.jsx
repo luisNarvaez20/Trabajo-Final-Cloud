@@ -3,12 +3,15 @@
 import { borrarSesion } from "../hooks/SessionUtilClient";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 
 export default function Menu() {
-
+    const router = useRouter();
+    
     const salir = () => {
         Cookies.remove("token");
-        borrarSesion();
+        borrarSesion
+        router.push("/login");
     }
 
     return (
