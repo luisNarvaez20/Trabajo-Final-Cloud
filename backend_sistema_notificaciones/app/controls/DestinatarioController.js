@@ -221,10 +221,9 @@ class DestinatarioControl {
                 attributes: ['correo'], // Solo obtener el campo 'correo'
             });
     
-            // Extraer solo los correos en un array
             const correos = listar.map(d => d.correo);
     
-            return correos; // Retorna un array con los correos
+            return correos; 
     
         } catch (error) {
             console.error('Error al obtener los correos de destinatarios:', error);
