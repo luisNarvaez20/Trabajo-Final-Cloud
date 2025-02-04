@@ -96,3 +96,22 @@ export async function  get_destinatario(external, token){
     return datos;
     // TODO agarrar errores
 }
+
+export async function peticionPut(recurso, data, key = "") {
+    let headers = {
+        'Accept': 'application/json',
+        "Content-Type": "application/json",
+    };
+
+    if (key !== "") {
+        headers["token-api"] = key;
+    }
+
+    const response = await fetch(`${URL}/${recurso}`, {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify(data),
+    });
+
+    return await response.json();
+}

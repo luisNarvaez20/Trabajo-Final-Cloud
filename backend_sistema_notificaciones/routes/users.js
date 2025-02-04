@@ -81,14 +81,15 @@ router.get('/destinatario/listar/', auth, destinatarioController.listar);
 router.get('/destinatario/listar_grupo/:external', auth, destinatarioController.listar_grupo);
 router.get('/destinatario/listar_user/:external', auth, destinatarioController.listar_User);
 router.post('/destinatario/editar/:external', auth, destinatarioController.modificar);
+router.put('/destinatario/eliminar/:external', auth, destinatarioController.eliminar);
 
 /*MENSAJE CONTROLLER*/
 router.post('/mensaje/guardar', auth, mensajeController.guardar);
 router.post('/mensaje/guardar_archivo', auth, mensajeController.guardar_archivo);
 router.post('/mensaje/enviar', auth, mensajeController.enviarMensajeLogicApps);
 router.get('/mensaje/listar', auth, mensajeController.listarMensaje);
-router.get('/recibirmensajes', recibmensajeController.recibirMensajes);
-router.get('/recibirtoken', recibmensajeController.obtenerToken);
+router.get('/recibirmensajes', auth, recibmensajeController.recibirMensajes);
+router.get('/recibirtoken', auth, recibmensajeController.obtenerToken);
 router.get('/mensaje/listar/:external', auth, mensajeController.obtener);
 
 /*RECORDATORIO CONTROLLER*/

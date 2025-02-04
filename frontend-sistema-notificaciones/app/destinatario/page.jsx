@@ -4,7 +4,7 @@ import Menu from "../../componentes/menu";
 import Footer from "../../componentes/footer";
 import mensajes from "../../componentes/Mensajes";
 import { useRouter } from 'next/navigation';
-import { peticionPost, peticionGet } from "../../hooks/Conexion";
+import { peticionPost, peticionGet, peticionPut } from "../../hooks/Conexion";
 import Cookies from 'js-cookie';
 import { useState, useEffect } from "react";
 import { borrarSesion, getExternal, getToken } from "../../hooks/SessionUtilClient";
@@ -13,6 +13,8 @@ export default function Page() {
     const token = getToken();
     const router = useRouter();
     const external = getExternal();
+    const [idEliminar, setIdEliminar] = useState(null); 
+
 
     const [obt, setObt] = useState(false);
     const [destinatario, setDestinatario] = useState([]);
@@ -35,6 +37,21 @@ export default function Page() {
             });
         }
     }, [obt]);
+
+
+const handleBaja = async () => {
+    if (!idEliminar) return; 
+
+    const respuesta = await peticionPut(`destinatario/eliminar/${idEliminar}`, {}, token);
+
+    if (respuesta.code === 200) {
+        mensajes("Destinatario eliminado con éxito", "Éxito", "success");
+        setObt(false);
+    } else {
+        mensajes("Error al eliminar destinatario", "Error", "error");
+    }
+};
+    
 
     return (
         <div className="row">
@@ -80,6 +97,34 @@ export default function Page() {
                                                 <td>{dato.grupo.nombre}</td>
                                                 <td>
                                                     <Link href={`/destinatario/editar/${dato.id}`} className="btn btn-warning font-weight-bold" style={{ marginRight: '15px', fontSize: '20px' }}>Editar</Link>
+                                                    <button
+                                                        className="btn btn-danger font-weight-bold"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModal"
+                                                        style={{ fontSize: '20px' }}
+                                                        onClick={() => setIdEliminar(dato.id)} // Almacena el ID del destinatario seleccionado
+
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                    {/* Modal de confirmación */}
+                                                    <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                        <div className="modal-dialog">
+                                                            <div className="modal-content">
+                                                                <div className="modal-header">
+                                                                    <h5 className="modal-title" id="exampleModalLabel">Confirmación</h5>
+                                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div className="modal-body">
+                                                                    ¿Estás seguro de que quieres eliminar este destinatario?
+                                                                </div>
+                                                                <div className="modal-footer">
+                                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleBaja(dato.id)}>Confirmar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        </div>
 
                                                 </td>
                                             </tr>
