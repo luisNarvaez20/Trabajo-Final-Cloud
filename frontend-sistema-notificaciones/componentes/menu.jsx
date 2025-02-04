@@ -4,13 +4,15 @@ import { borrarSesion } from "../hooks/SessionUtilClient";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import mensajes from '../componentes/Mensajes';
 
 export default function Menu() {
     const router = useRouter();
     
     const salir = () => {
         Cookies.remove("token");
-        borrarSesion
+        borrarSesion();
+        mensajes("Sesion cerrada", "Ha cerrado sesión correctamente", "success");
         router.push("/login");
     }
 
