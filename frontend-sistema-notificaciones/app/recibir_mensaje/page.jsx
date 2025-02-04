@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import { peticionGet } from "../../hooks/Conexion";
 import Menu from "../../componentes/menu";
 import Footer from "../../componentes/footer";
+import { borrarSesion, getExternal, getToken } from "../../hooks/SessionUtilClient";
 
 export default function Page() {
+  const token = getToken();
   const [correos, setCorreos] = useState([]);
   const [sentiments, setSentiments] = useState({});
   const [opinions, setOpinions] = useState({});
@@ -13,7 +15,7 @@ export default function Page() {
 
   const obtenerCorreos = async () => {
     try {
-      const response = await peticionGet('recibirmensajes');
+      const response = await peticionGet('recibirmensajes', token);
       console.log("Respuesta de la API:", response);
       const data = await response;
       if (data.emails) {
