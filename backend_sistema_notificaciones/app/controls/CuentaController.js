@@ -44,7 +44,7 @@ class CuentaController {
                         require('dotenv').config();
                         const llave = process.env.KEY_SQ;
                         const token = jwt.sign(tokenData, llave, {
-                            expiresIn: '1h'
+                            expiresIn: '2h'
                         });
 
                         res.json({
