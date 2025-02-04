@@ -49,7 +49,6 @@ export default function Page() {
           setSentiments(prev => ({ ...prev, [index]: doc.sentiment }));
           setConfidenceScores(prev => ({ ...prev, [index]: doc.confidenceScores }));
           
-          // Extraer opiniones si existen
           if (doc.sentences) {
             const extractedOpinions = doc.sentences.flatMap(sentence => sentence.opinions || []);
             setOpinions(prev => ({ ...prev, [index]: extractedOpinions }));
@@ -90,6 +89,7 @@ export default function Page() {
                   </div>
                   <div className="card-body">
                     <p><strong>📩 Enviado Por:</strong> {email.from}</p>
+                    <p><strong>📨 Enviado A:</strong> {email.to}</p>
                     <p><strong>📌 Asunto:</strong> {email.subject}</p>
                     <p><strong>📝 Cuerpo:</strong> {email.snippet}</p>
                     <button 
