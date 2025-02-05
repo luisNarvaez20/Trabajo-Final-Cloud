@@ -37,6 +37,8 @@ const configurarJob = async () => {
                 for (const elemento of recor) {
                     if (!elemento.estado) continue; // Si el recordatorio está inactivo, saltar
 
+                    console.log(formatearFecha(elemento.fecha) + ' ' +obtenerFechaActual() + ' ' +elemento.hora + ' '+obtenerHoraActual());
+
                     if (formatearFecha(elemento.fecha) == obtenerFechaActual() && elemento.hora == obtenerHoraActual()) {
 
                         const mensa = await mensaje.findOne({ where: { id: elemento.id_mensaje } });
