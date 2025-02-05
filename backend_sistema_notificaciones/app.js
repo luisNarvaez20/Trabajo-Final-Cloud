@@ -6,6 +6,7 @@ var logger = require('morgan');
 require('dotenv').config();
 
 const models = require('./app/models');
+const notificarController = require("./app/controls/NotificarController");
 
 //cors
 const cors = require("cors");

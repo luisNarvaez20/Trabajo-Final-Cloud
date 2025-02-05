@@ -19,6 +19,7 @@ const RecibMensajesController = require('../app/controls/RecibMensajesController
 var recibmensajeController = new RecibMensajesController();
 const RecordatorioController = require('../app/controls/RecordatorioController');
 var recordatorioController = new RecordatorioController();
+const notificarController = require('../app/controls/NotificarController')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
