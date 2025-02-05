@@ -14,6 +14,7 @@ const obtenerFechaActual = () => {
 
 const obtenerHoraActual = () => {
     const ahora = new Date();
+    ahora.setHours(ahora.getHours() - 5); // Restar 5 horas
     return ahora.toTimeString().split(' ')[0].slice(0, 5) + ":00"; // Formato HH:mm:00
 };
 
@@ -90,28 +91,9 @@ const configurarJob = async () => {
                             },
                             body: JSON.stringify(payload)
                         });
+ 
 
-                        const responseText = await response.text();
-                        console.log("Respuesta de Logic Apps:", responseText);
-
-                        let results;
-
-                        try {
-                            results = JSON.parse(responseText).body;
-                        } catch (error) {
-                            console.error("Error al parsear la respuesta JSON:", error);
-                            continue;
-                        }
-
-                        if (!response.ok) {
-                            console.error(`Error al enviar a Logic Apps: ${response.status} - ${response.statusText}`);
-                            continue;
-                        }
-
-                        if (!results || !results.archivos) {
-                            console.error("Respuesta inválida de Logic Apps");
-                            continue;
-                        }
+                    
 
                         const data = {
                             nombre: elemento.nombre,
