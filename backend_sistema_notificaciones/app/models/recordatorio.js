@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         fecha: { type: DataTypes.DATE },
         estado: { type: DataTypes.BOOLEAN, defaultValue: true },
     }, {
-        freezeTableName: true  
+        freezeTableName: true
     });
 
     recordatorio.associate = function (models) {

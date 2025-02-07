@@ -6,15 +6,16 @@ module.exports = (sequelize, DataTypes) => {
         asunto: { type: DataTypes.STRING(255), defaultValue: "NO_DATA" },
         contenido: { type: DataTypes.TEXT, defaultValue: "NO_DATA" },
         tipo: { type: DataTypes.STRING(50), defaultValue: "NO_DATA" },
+        remitente: { type: DataTypes.STRING(50), defaultValue: "NO_DATA" },
+        resumen: { type: DataTypes.TEXT, defaultValue: "NO_DATA" },
         fecha: { type: DataTypes.DATE },
         estado: { type: DataTypes.BOOLEAN, defaultValue: true },
     }, {
-        freezeTableName: true  
+        freezeTableName: true
     });
 
     mensaje.associate = function (models) {
         mensaje.belongsTo(models.usuario, { foreignKey: 'id_usuario' });
-
         mensaje.belongsTo(models.grupo, { foreignKey: 'id_grupo', as: 'grupo' });
 
         // Cambiar de hasOne a hasMany para permitir múltiples archivos adjuntos

@@ -88,13 +88,17 @@ router.put('/destinatario/eliminar/:external', auth, destinatarioController.elim
 router.post('/mensaje/guardar', auth, mensajeController.guardar);
 router.post('/mensaje/guardar_archivo', auth, mensajeController.guardar_archivo);
 router.post('/mensaje/enviar', auth, mensajeController.enviarMensajeLogicApps);
-router.get('/mensaje/listar', auth, mensajeController.listarMensaje);
+router.get('/mensaje/listar',  mensajeController.listarMensaje);
+router.post('/mensaje/rechazar',  mensajeController.enviarMensajeRechazar);
+router.post('/mensaje/enviar/respuesta',  mensajeController.enviarRespuesta);
+router.get('/mensaje/listar/:valor',  mensajeController.obtenerValor);
 router.get('/recibirmensajes', auth, recibmensajeController.recibirMensajes);
 router.get('/recibirtoken', auth, recibmensajeController.obtenerToken);
 router.get('/mensaje/listar/:external', auth, mensajeController.obtener);
+router.post('/mensaje/recibir', mensajeController.recibirMensaje);
 
 /*RECORDATORIO CONTROLLER*/
-router.get('/recordatorio/listar/:external', auth, recordatorioController.listar);
-router.post('/recordatorio/registrar', auth, recordatorioController.guardar);
+router.get('/recordatorio/listar/:external', auth,recordatorioController.listar);
+router.post('/recordatorio/registrar', recordatorioController.guardar);
 
 module.exports = router;
