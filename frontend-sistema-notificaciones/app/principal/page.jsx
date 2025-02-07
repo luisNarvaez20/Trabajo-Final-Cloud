@@ -3,77 +3,82 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { FaUsers, FaUser, FaHistory } from 'react-icons/fa';
 import Menu from '../../componentes/menu';
 import Footer from '../../componentes/footer';
-import mensajes from '../../componentes/Mensajes';
 import { borrarSesion, getExternal, getToken } from '../../hooks/SessionUtilClient';
-import { peticionGet } from '../../hooks/Conexion';
-import { Modal, Button } from 'react-bootstrap';
+import { peticionGet, peticionPost } from '../../hooks/Conexion';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import mensajes from '../../componentes/Mensajes';
 
 export default function Principal() {
     const key = getToken();
     const router = useRouter();
-    const [grupos, setGrupos] = useState([]);
+    const [mensaj, setMensaj] = useState([]);
     const external = getExternal();
-    const [showModal, setShowModal] = useState(false);
-    const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
-    const [grupoSeleccionado2, setGrupoSeleccionado2] = useState(null);
-    const [obt, setObt] = useState(false);
+    const [filtro, setFiltro] = useState('');
+
+
+
 
     useEffect(() => {
-        peticionGet(`grupo/listar/${external}`, key).then((info) => {
+        peticionGet("mensaje/listar/", key).then((info) => {
+            console.log(info)
             if (info.code === 200) {
-                setGrupos(info.info);
+                setMensaj(info.datos);
             } else if (["token expirado o no valido", "token no valido", "no existe token"].includes(info.tag)) {
-                mensajes(info.tag, "Error", "error");
+                mensajes(info.msg, "Error", "error");
                 Cookies.remove("token");
                 borrarSesion();
                 router.push("/login");
             } else {
-                mensajes("No se pudo Listar los Grupos", "Error", "error");
+                mensajes("No se pudo Listar los mensajes", "Error", "error");
             }
         });
     }, [external, key, router]);
 
-    const abrirModal = async (grupo) => {
-        try {
-            const info = await peticionGet(`destinatario/listar_grupo/${grupo.external_id}`, key);
-
-            if (info.code !== 200) {
-                manejarError(info.msg);
-                return;
-            }
-
-            setGrupoSeleccionado(info.datos);
-
-            const info2 = await peticionGet(`mensaje/listar/${grupo.external_id}`, key);
-
-            if (info2.code !== 200) {
-                mensajes("No se pudo obtener los mensajes", "Error", "error");
-                return;
-            }
-
-            setGrupoSeleccionado2(info2.info);
-            setShowModal(true);
-            setObt(true);
-        } catch (error) {
-            console.error("Error al abrir el modal:", error);
-            mensajes("Ocurrió un error inesperado", "Error", error);
-        }
+    const manejarCambio = (event) => {
+        const valorSeleccionado = event.target.value;
+        setFiltro(valorSeleccionado);  // Actualiza el estado con el valor seleccionado
+        ejecutarMetodo(valorSeleccionado);  // Ejecuta el método con el valor seleccionado
     };
 
-    const manejarError = (tag) => {
-        const erroresToken = ["token expirado o no valido", "token no valido", "no existe token"];
+    const ejecutarMetodo = (valor) => {
+        console.log("Método ejecutado con valor: ", valor);
 
-        if (erroresToken.includes(tag)) {
-            mensajes(tag, "Error", "error");
-            Cookies.remove("token");
-            borrarSesion();
-            router.push("/login");
-        } else {
-            mensajes(tag, "Error", 'error');
-        }
+        peticionGet("mensaje/listar/" + valor, key).then((info) => {
+
+            if (info.code === 200) {
+                setMensaj(info.datos);
+            } else if (["token expirado o no valido", "token no valido", "no existe token"].includes(info.tag)) {
+                mensajes(info.msg, "Error", "error");
+                Cookies.remove("token");
+                borrarSesion();
+                router.push("/login");
+            } else {
+                mensajes("No se pudo Listar los mensajes", "Error", "error");
+            }
+        });
+    };
+
+    const handleClickRechazar = (data) => {
+
+
+        const datos = {
+            'remitente': data,
+        };
+
+        peticionPost("mensaje/rechazar/", datos, key).then((info) => {
+            if (info.code === 200) {
+                mensajes(info.msg, "Success", "mensaje enviado");
+            } else if (["token expirado o no valido", "token no valido", "no existe token"].includes(info.tag)) {
+                mensajes(info.msg, "Error", "error");
+                Cookies.remove("token");
+                borrarSesion();
+                router.push("/login");
+            } else {
+                mensajes("No se pudo enviar el mensaje", "Error", "error");
+            }
+        });
     };
 
     return (
@@ -81,92 +86,132 @@ export default function Principal() {
             <div className="container-fluid p-1 position-relative">
                 <Menu />
                 <br />
+                <div style={{ textAlign: 'center' }}>
+                    <h1>Mensajes Recibidos</h1>
+
+                </div>
+                <br />
+                <div className="input-group">
+                    <label htmlFor="" style={{ width: '150px', marginLeft: '200px' }}>Filtrar mensajes Recibidos: </label>
+                    <select
+                        className="form-control"
+                        id="filtroBusqueda"
+                        onChange={manejarCambio}
+                        style={{
+                            backgroundColor: '#F2F6F5',
+                            color: '#333',
+                            borderRadius: '8px',  // Bordes redondeados
+                            border: "1px solid #000000",  // Borde delgado
+                            marginRight: '200px',
+                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',  // Sombra para relieve
+                            transition: 'box-shadow 0.3s ease, border 0.3s ease',  // Transición suave
+                        }}
+                        aria-describedby="button-addon2"
+                    >
+                        <option value="">TODOS</option>
+                        <option value="informes">INFORMES</option>
+                        <option value="curriculums">CURRICULUMS</option>
+                        <option value="solicitudes">SOLICITUDES</option>
+                        <option value="otros">OTROS</option>
+                    </select>
+                </div>
+                <br />
                 <div className="d-flex flex-column align-items-center flex-grow-1">
-                    <div className="container">
-                        <div className="row">
-                            {grupos.length > 0 ? (
-                                grupos.map((card, index) => (
-                                    <div key={index} className="col-md-4 mb-3">
-                                        <div className="card h-100" style={{ backgroundColor: "rgba(255,255,255,0.8)", color: "black" }}>
-                                            <div className="card-body">
-                                                <h5 className="card-title">Grupo: {card.nombre}</h5>
-                                                <p className="card-text">Tipo: {card.tipo}</p>
-                                                <button className="btn btn-light mt-2" onClick={() => abrirModal(card)} style={{ backgroundColor: 'turquoise' }}>
-                                                    Ver Detalles
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <table
+                        className="table table-bordered table-hover"
+                        style={{
+                            fontSize: '15px',
+                            borderColor: 'ActiveBorder',
+                            width: '100%',
+                            borderRadius: '10px',
+                            overflow: 'hidden', // Para que las esquinas redondeadas se vean bien
+                        }}
+                    >
+                        <thead
+                            className="table-active"
+                            style={{
+                                backgroundColor: '#205375',
+                                color: 'white',
+                                fontSize: '20px',
+                                textAlign: 'center',
+                                borderRadius: '10px 10px 0 0', // Bordes redondeados en el encabezado
+                            }}
+                        >
+                            <tr>
+                                <th>Remitente</th>
+                                <th>Categoria</th>
+                                <th>Asunto</th>
+                                <th>Resumen</th>
+                                <th>Archivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {mensaj.length > 0 ? (
+                                mensaj.map((dato, index) => (
+                                    <tr
+                                        key={index}
+                                        style={{
+                                            backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white',
+                                            transition: 'background-color 0.3s',
+                                        }}
+                                        onMouseEnter={(e) => (e.target.style.backgroundColor = '#e9ecef')}
+                                        onMouseLeave={(e) => (e.target.style.backgroundColor = index % 2 === 0 ? '#f8f9fa' : 'white')}
+                                    >
+
+                                        <td>{dato.remitente}</td>
+                                        <td>{dato.tipo}</td>
+                                        <td>{dato.asunto}</td>
+                                        <td>{dato.resumen}</td>
+
+                                        <td>{ }</td>
+
+
+
+
+                                        <td style={{ textAlign: 'center' }}>
+
+                                            <a
+                                                href={`/mensaje/nuevo/${dato.remitente}`} // La ruta a la que quieres redirigir
+                                                className="btn btn-success font-weight-bold"
+                                                style={{
+                                                    fontSize: '16px',
+                                                    borderRadius: '5px',
+                                                    padding: '8px 15px',
+                                                    display: 'inline-block', // Para que el enlace se vea como un botón
+                                                    textDecoration: 'none', // Eliminar subrayado
+                                                    color: 'white', // Color del texto
+                                                }}
+                                            >
+                                                Responder
+                                            </a>
+                                            <br />
+                                            <button
+                                                className="btn btn-danger font-weight-bold"
+                                                onClick={() => handleClickRechazar(dato.remitente)}
+                                                style={{
+                                                    fontSize: '16px',
+                                                    borderRadius: '5px',
+                                                    padding: '8px 15px',
+                                                }}
+                                            >
+                                                Rechazar
+                                            </button>
+
+                                        </td>
+                                    </tr>
                                 ))
                             ) : (
-                                <div className="col-12 text-center mt-5">
-                                    <h3 className="text-muted">No existen grupos aún</h3>
-                                </div>
+                                <tr>
+                                    <td colSpan="6" className="text-center text-muted">
+                                        Sin mensajes aún
+                                    </td>
+                                </tr>
                             )}
-                        </div>
-                    </div>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
-
-             {/* Modal de detalles */}
-             <Modal show={showModal} onHide={() => setShowModal(false)} >
-                <Modal.Header closeButton>
-                    <Modal.Title>Detalles del Grupo</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                        <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>
-                            <strong>Destinatarios:</strong>
-                        </p>
-                        <div style={{ maxHeight: '200px', overflowY: 'auto', paddingRight: '10px', textAlign: 'left' }}>
-                            {grupoSeleccionado?.length > 0 ? (
-                                grupoSeleccionado.map((grupo, index) => (
-                                    <p key={index} className="mb-4">
-                                        <strong>Nombres:</strong> {grupo.nombres} {grupo.apellidos} {' '}
-                                        <strong>Correo:</strong> {grupo.correo}
-                                    </p>
-                                ))
-                            ) : (
-                                <p>No hay destinatarios disponibles.</p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                        <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>
-                            <strong>Historial   Mensajes:</strong>
-                        </p>
-                        <div style={{ maxHeight: '200px', overflowY: 'auto', paddingRight: '10px', textAlign: 'left' }}>
-                            {grupoSeleccionado2?.length > 0 ? (
-                                grupoSeleccionado2.map((mej, index) => (
-                                    <p key={index} className="mb-4">
-                                        <strong>Asunto:</strong> {mej.asunto} {' '}
-                                        <strong>Contenido:</strong> {mej.contenido} {' '}
-                                        <strong>Fecha:</strong> {mej.fecha}
-                                    </p>
-                                ))
-                            ) : (
-                                <p>No hay mensajes disponibles.</p>
-                            )}
-                        </div>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>
-                </Modal.Footer>
-            </Modal>
-
-
-
-
-            {/* Botón flotante */}
-            <a className="btn btn-primary position-fixed bottom-0 end-0 m-4"
-                style={{ width: '110px', height: '60px', background: 'linear-gradient(140deg,rgb(105, 236, 206), #0077cc)', zIndex: 10 }}
-                href='/grupo'
-            >
-                Crear Grupo
-            </a>
-
             <Footer className="mt-auto position-relative" />
         </div>
     );

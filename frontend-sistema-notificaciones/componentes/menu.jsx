@@ -28,25 +28,11 @@ export default function Menu() {
                         </li>
 
                         <>
-                            <li className="nav-item">
-                                <Link className="nav-link active text-white" aria-current="page" href="/grupo">Grupo</Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link className="nav-link active text-white" aria-current="page" href="/destinatario">Destinatarios</Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link className="nav-link active text-white" aria-current="page" href="/mensaje">Enviar Mensaje</Link>
-                            </li>
 
                             <li className="nav-item">
                                 <Link className="nav-link active text-white" aria-current="page" href="/recordatorio">Recordatorios</Link>
                             </li>
 
-                            <li className="nav-item">
-                                <Link className="nav-link active text-white" aria-current="page" href="/recibir_mensaje">Recibidos</Link>
-                            </li>
                         </>
 
                         <li className="nav-item">

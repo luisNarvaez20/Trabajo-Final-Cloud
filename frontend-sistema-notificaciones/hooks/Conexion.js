@@ -22,7 +22,7 @@ export async function peticionPost(recurso, data, key = "") {
         };
     }
 
-    const response = await fetch(`${URL}/${recurso}`, {
+    const response = await fetch(`${URL}${recurso}`, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(data)
