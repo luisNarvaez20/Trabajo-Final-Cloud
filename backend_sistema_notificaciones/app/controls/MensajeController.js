@@ -610,3 +610,4 @@ class MensajeControl {
 }
 
 module.exports = MensajeControl;
+
