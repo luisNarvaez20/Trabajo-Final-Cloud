@@ -342,6 +342,62 @@ class MensajeControl {
             });
         }
     }
+
+    async recibirMensaje(req, res) {
+        try {
+
+            var data = {
+                asunto: req.body.asunto,
+                contenido: req.body.contenido,
+                tipo: req.body.categoria,
+                fecha: req.body.fecha,
+                resumen: req.body.resumen,
+                remitente: req.body.remitente,
+                external_id: req.body.external_id
+            };
+
+            let transaction = await models.sequelize.transaction();
+
+            try {
+                // Crear y guardar mensaje
+                await mensaje.create(data, { transaction });
+
+                for (const anexo of req.body.anexos) {
+                    var data2 = {
+                        nombre: anexo.nombre,
+                        tipo: anexo.tipo,
+                        dir: anexo.url,
+                        external_id: req.body.external_id
+                    };
+
+                    try {
+                        await archivo.create(data2, { transaction });
+                        console.log("archivo guardado con exito");
+                    } catch (err) {
+                        if (transaction) await transaction.rollback();
+                        const errorMsg = err.errors && err.errors[0] && err.errors[0].message
+                            ? err.errors[0].message
+                            : err.message;
+                        console.log("error al guardar el archivo: " + errorMsg);
+                    }
+                }
+
+                await transaction.commit();
+                console.log("mensaje guardado con exito");
+
+            } catch (error) {
+                if (transaction) await transaction.rollback();
+                const errorMsg = error.errors && error.errors[0] && error.errors[0].message
+                    ? error.errors[0].message
+                    : error.message;
+                console.log("error al guardar el mensaje" + errorMsg);
+            }
+
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
 }
 
 module.exports = MensajeControl;
