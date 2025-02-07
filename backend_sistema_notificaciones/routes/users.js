@@ -92,6 +92,7 @@ router.get('/mensaje/listar', auth, mensajeController.listarMensaje);
 router.get('/recibirmensajes', auth, recibmensajeController.recibirMensajes);
 router.get('/recibirtoken', auth, recibmensajeController.obtenerToken);
 router.get('/mensaje/listar/:external', auth, mensajeController.obtener);
+router.post('/mensaje/recibir', mensajeController.recibirMensaje);
 
 /*RECORDATORIO CONTROLLER*/
 router.get('/recordatorio/listar/:external', auth, recordatorioController.listar);
