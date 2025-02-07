@@ -414,7 +414,7 @@ class MensajeControl {
             const payload = {
                 asunto: "RESPUESTA DE RECURSOS HUMANOS",
                 contenido: "Se le agradece por su tiempo para enviar el correo, pero actualmente no ha sido considerado para este proceso",
-                destinatario: req.params.remitente,
+                destinatario: [req.params.remitente],
                 archivos: []
             };
     
@@ -501,9 +501,11 @@ class MensajeControl {
             const payload = {
                 asunto: req.body.asunto,
                 contenido: req.body.contenido,
-                destinatario: req.body.remitente,
+                destinatario: [req.body.remitente],
                 archivos: []
             };
+
+            console.log("paylod", payload)
     
             // Realizar petición a Logic Apps
             const response = await fetch(logicAppsUrl, {
