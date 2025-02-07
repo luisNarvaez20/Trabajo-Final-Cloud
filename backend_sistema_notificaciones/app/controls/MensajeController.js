@@ -346,6 +346,8 @@ class MensajeControl {
     async recibirMensaje(req, res) {
         const transaction = await models.sequelize.transaction(); // Iniciar la transacción
 
+        console.log("respuesta req: "+req);
+
         try {
             const data = {
                 asunto: req.body.asunto,
