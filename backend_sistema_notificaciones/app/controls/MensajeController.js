@@ -10,6 +10,8 @@ var path = require('path');
 var fs = require('fs');
 var multer = require('multer'); // Importamos multer
 var crypto = require('crypto');
+const { Sequelize } = require('sequelize');
+
 // Configuración de almacenamiento con Multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -29,16 +31,29 @@ const upload = multer({ storage: storage });
 
 class MensajeControl {
 
+    
     async listarMensaje(req, res) {
-        var lista = await mensaje.findAll({
-            include: [
-                { model: models.grupo, as: "grupo", attributes: ['nombre', 'external_id'] },
-            ],
-            attributes: ['asunto','contenido', ['external_id', 'id'], 'tipo', 'fecha']
-        });
-        res.status(200);
-        res.json({ msg: "OK", code: 200, datos: lista });
+        try {
+            var lista = await mensaje.findAll({
+                include: [
+                    {
+                        model: models.archivo, 
+                        as: "archivo", 
+                        attributes: ['tipo', 'dir'],
+                        required: false // Permite mensajes sin archivo
+                    },
+                ],
+                attributes: ['asunto', 'contenido', 'external_id', 'tipo', 'fecha', 'resumen', 'remitente']
+            });
+    
+            console.log(lista);
+            res.status(200).json({ msg: "OK", code: 200, datos: lista });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ msg: "Error en la consulta", code: 500, error: error.message });
+        }
     }
+    
 
     // Función para guardar un mensaje
     async guardar(req, res) {
@@ -48,7 +63,7 @@ class MensajeControl {
             req.body.hasOwnProperty('fecha') &&
             req.body.hasOwnProperty('id_destinatario') &&
             req.body.hasOwnProperty('id_usuario')) {
-            
+
             var destinatarioA = await destinatario.findOne({
                 where: { external_id: req.body.id_destinatario },
             });
@@ -81,8 +96,8 @@ class MensajeControl {
         }
     }
 
-     //METODO PARA OBTENER DATOS DE MENSAJES
-     async obtener(req, res) {
+    //METODO PARA OBTENER DATOS DE MENSAJES
+    async obtener(req, res) {
         try {
 
             // Buscar el grupo usando el external_id de los parámetros de la URL
@@ -102,6 +117,34 @@ class MensajeControl {
 
 
             res.json({ msg: 'OK!', code: 200, info: listar || [] });
+        } catch (error) {
+            console.error('Error al obtener los mensajes:', error);
+            res.status(500).json({ msg: 'Error al obtener los mensajes', code: 500 });
+        }
+    }
+
+    //METODO PARA OBTENER DATOS DE MENSAJES
+    async obtenerValor(req, res) {
+        try {
+
+            var listar = await mensaje.findAll({
+                include: [
+                    {
+                        model: models.archivo, 
+                        as: "archivo", 
+                        attributes: ['tipo', 'dir'],
+                        required: false // Permite mensajes sin archivo
+                    },
+                ],
+                where:{tipo : req.params.valor},
+                attributes: ['asunto', 'contenido', 'external_id', 'tipo', 'fecha', 'resumen', 'remitente']
+            });
+
+            if (!listar) {
+                return res.status(404).json({ msg: 'No hay mensajes aun', code: 404 });
+            }
+
+            res.json({ msg: 'OK!', code: 200, datos: listar || [] });
         } catch (error) {
             console.error('Error al obtener los mensajes:', error);
             res.status(500).json({ msg: 'Error al obtener los mensajes', code: 500 });
@@ -243,35 +286,35 @@ class MensajeControl {
                     code: 500
                 });
             }
-            console.log("4. url logic apps obtenida: "+process.env.LOGIC_APPS_URL);
-            console.log("4.1. url decodificada: "+logicAppsUrl);
+            console.log("4. url logic apps obtenida: " + process.env.LOGIC_APPS_URL);
+            console.log("4.1. url decodificada: " + logicAppsUrl);
             //obtener los correos de los destinatarios del grupo
             var destinatarios = await destinatario.findAll({ where: { id_grupo: grupoId.id } });
             if (!destinatarios || destinatarios.length === 0) {
-                return res.status(401).json({ 
-                    msg: "ERROR", 
-                    tag: "No se encuentran destinatarios en el grupo", 
-                    code: 401 
+                return res.status(401).json({
+                    msg: "ERROR",
+                    tag: "No se encuentran destinatarios en el grupo",
+                    code: 401
                 });
             }
             console.log("5. destinatarios obtenidos");
             console.log(destinatarios.map(destinatario => destinatario.correo));
             const correosDestinatarios = destinatarios
-            .map(dest => dest.correo)
-            .filter(correo => correo); // Filtrar nulls/undefined
+                .map(dest => dest.correo)
+                .filter(correo => correo); // Filtrar nulls/undefined
             console.log("5.1 correos destinatarios obtenidos");
             if (correosDestinatarios.length === 0) {
-                return res.status(401).json({ 
-                    msg: "ERROR", 
-                    tag: "No hay correos válidos en el grupo", 
-                    code: 401 
+                return res.status(401).json({
+                    msg: "ERROR",
+                    tag: "No hay correos válidos en el grupo",
+                    code: 401
                 });
             }
             // Estructurar payload
             const payload = {
                 asunto: req.body.asunto,
                 contenido: req.body.contenido,
-                destinatario : correosDestinatarios,
+                destinatario: correosDestinatarios,
                 archivos: req.body.archivos || []
             };
             console.log("6.payload estructurado");
@@ -306,12 +349,12 @@ class MensajeControl {
                 throw new Error(`Error al enviar a Logic Apps: ${response.statusText}`);
             }
             console.log("8. respuesta obtenida de logic apps:", results);
-            
+
             // Validar la estructura de la respuesta
             if (!results || !results.archivos) {
                 throw new Error('Respuesta inválida de Logic Apps');
             }
-            
+
             console.log("8. respuesta obtenida de logic apps");
             // Guardar archivos en base de datos
             const archivosGuardados = [];
@@ -331,6 +374,181 @@ class MensajeControl {
                 data: results
             });
             console.log("9. archivos guardados en base de datos correctamente");
+
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).json({
+                msg: "ERROR",
+                tag: "Error al enviar mensaje",
+                code: 500,
+                error: error.message
+            });
+        }
+    }
+
+
+    async enviarMensajeRechazar(req, res) {
+        try {
+            // Decodificación de la URL
+            const encryptedText = process.env.LOGIC_APPS_URL;
+            if (!encryptedText) {
+                return res.status(500).json({
+                    msg: "ERROR",
+                    tag: "URL de Logic Apps no configurada",
+                    code: 500
+                });
+            }
+    
+            const decrypted = Buffer.from(encryptedText, "base64").toString("utf8");
+            if (!decrypted) {
+                return res.status(500).json({
+                    msg: "ERROR",
+                    tag: "URL de Logic Apps no válida",
+                    code: 500
+                });
+            }
+    
+            let logicAppsUrl = decrypted;
+    
+            // Estructurar payload
+            const payload = {
+                asunto: "RESPUESTA DE RECURSOS HUMANOS",
+                contenido: "Se le agradece por su tiempo para enviar el correo, pero actualmente no ha sido considerado para este proceso",
+                destinatario: req.params.remitente,
+                archivos: []
+            };
+    
+            // Realizar petición a Logic Apps
+            const response = await fetch(logicAppsUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error al enviar a Logic Apps: ${response.statusText}`);
+            }
+    
+            const responseText = await response.text();
+    
+            let results;
+            try {
+                // Si la respuesta incluye "body", extraer solo esa parte
+                if (responseText.includes('"body":')) {
+                    const bodyMatch = responseText.match(/"body":\s*({.*})/);
+                    if (bodyMatch && bodyMatch[1]) {
+                        results = JSON.parse(bodyMatch[1]);
+                    }
+                } else {
+                    results = JSON.parse(responseText);
+                }
+            } catch (error) {
+                console.error("Error parseando JSON:", error);
+                throw new Error("Error al procesar la respuesta de Logic Apps");
+            }
+    
+            // Validar la estructura de la respuesta
+            if (!results || !results.archivos) {
+                throw new Error('Respuesta inválida de Logic Apps');
+            }
+    
+            console.log("Respuesta obtenida de Logic Apps:", results);
+    
+            // Respuesta exitosa
+            res.status(200).json({
+                msg: "Mensaje enviado exitosamente",
+                code: 200,
+                data: results
+            });
+    
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).json({
+                msg: "ERROR",
+                tag: "Error al enviar mensaje",
+                code: 500,
+                error: error.message
+            });
+        }
+    }
+    
+    async enviarRespuesta(req, res) {
+        try {
+            // Decodificación de la URL
+            const encryptedText = process.env.LOGIC_APPS_URL;
+            if (!encryptedText) {
+                return res.status(500).json({
+                    msg: "ERROR",
+                    tag: "URL de Logic Apps no configurada",
+                    code: 500
+                });
+            }
+    
+            const decrypted = Buffer.from(encryptedText, "base64").toString("utf8");
+            if (!decrypted) {
+                return res.status(500).json({
+                    msg: "ERROR",
+                    tag: "URL de Logic Apps no válida",
+                    code: 500
+                });
+            }
+    
+            let logicAppsUrl = decrypted;
+    
+            // Estructurar payload
+            const payload = {
+                asunto: req.body.asunto,
+                contenido: req.body.contenido,
+                destinatario: req.body.remitente,
+                archivos: []
+            };
+    
+            // Realizar petición a Logic Apps
+            const response = await fetch(logicAppsUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error al enviar a Logic Apps: ${response.statusText}`);
+            }
+    
+            const responseText = await response.text();
+    
+            let results;
+            try {
+                // Si la respuesta incluye "body", extraer solo esa parte
+                if (responseText.includes('"body":')) {
+                    const bodyMatch = responseText.match(/"body":\s*({.*})/);
+                    if (bodyMatch && bodyMatch[1]) {
+                        results = JSON.parse(bodyMatch[1]);
+                    }
+                } else {
+                    results = JSON.parse(responseText);
+                }
+            } catch (error) {
+                console.error("Error parseando JSON:", error);
+                throw new Error("Error al procesar la respuesta de Logic Apps");
+            }
+    
+            // Validar la estructura de la respuesta
+            if (!results || !results.archivos) {
+                throw new Error('Respuesta inválida de Logic Apps');
+            }
+    
+            console.log("Respuesta obtenida de Logic Apps:", results);
+    
+            // Respuesta exitosa
+            res.status(200).json({
+                msg: "Mensaje enviado exitosamente",
+                code: 200,
+                data: results
+            });
     
         } catch (error) {
             console.error('Error:', error);
