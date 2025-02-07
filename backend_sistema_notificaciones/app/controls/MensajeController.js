@@ -358,7 +358,7 @@ class MensajeControl {
             };
 
             // Crear y guardar mensaje dentro de la transacción
-            const mensajeCreado = await mensaje.create(data, { transaction });
+            await mensaje.create(data, { transaction });
 
             for (const anexo of req.body.anexos || []) { // Evita error si `anexos` es undefined
                 const data2 = {
