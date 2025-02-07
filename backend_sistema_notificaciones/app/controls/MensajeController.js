@@ -368,7 +368,7 @@ class MensajeControl {
                     nombre: anexo.nombre,
                     tipo: anexo.tipo,
                     dir: anexo.url,
-                    external_id: req.body.external_id
+                    external_id: req.body.external_id,
                     id_mensaje: mensajeCreado.id
                 };
 
