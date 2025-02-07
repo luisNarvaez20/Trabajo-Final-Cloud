@@ -501,9 +501,11 @@ class MensajeControl {
             const payload = {
                 asunto: req.body.asunto,
                 contenido: req.body.contenido,
-                destinatario: req.body.remitente,
+                destinatario: [req.body.remitente],
                 archivos: []
             };
+
+            console.log("paylod", payload)
     
             // Realizar petición a Logic Apps
             const response = await fetch(logicAppsUrl, {

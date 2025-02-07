@@ -109,10 +109,10 @@ export default function Principal() {
                         aria-describedby="button-addon2"
                     >
                         <option value="">TODOS</option>
-                        <option value="informes">INFORMES</option>
+                        <option value="informe">INFORMES</option>
                         <option value="curriculums">CURRICULUMS</option>
-                        <option value="solicitudes">SOLICITUDES</option>
-                        <option value="otros">OTROS</option>
+                        <option value="solicitud">SOLICITUDES</option>
+                        <option value="otro">OTROS</option>
                     </select>
                 </div>
                 <br />
@@ -154,8 +154,6 @@ export default function Principal() {
                                             backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white',
                                             transition: 'background-color 0.3s',
                                         }}
-                                        onMouseEnter={(e) => (e.target.style.backgroundColor = '#e9ecef')}
-                                        onMouseLeave={(e) => (e.target.style.backgroundColor = index % 2 === 0 ? '#f8f9fa' : 'white')}
                                     >
 
                                         <td>{dato.remitente}</td>
@@ -179,7 +177,7 @@ export default function Principal() {
                                                     padding: '8px 15px',
                                                     display: 'inline-block', // Para que el enlace se vea como un botón
                                                     textDecoration: 'none', // Eliminar subrayado
-                                                    color: 'white', // Color del texto
+                            
                                                 }}
                                             >
                                                 Responder
